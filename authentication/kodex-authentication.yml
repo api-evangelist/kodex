@@ -1,0 +1,48 @@
+generated: '2026-07-19'
+method: searched
+source: https://www.kodexglobal.com/api
+docs: https://docs.kodexapi.com/
+notes: Kodex publishes no downloadable OpenAPI definition, so this profile is captured
+  from the provider's own published API page and from the API-key configuration declared
+  by the two ReadMe documentation projects (Request Portal and Verifications API).
+summary:
+  types:
+  - apiKey
+  - oauth2
+  api_key_in:
+  - header
+  oauth2_flows: []
+schemes:
+- name: X-API-Key
+  type: apiKey
+  in: header
+  parameter_name: X-API-Key
+  scoped: true
+  description: Scoped API keys for service-to-service calls, sent in a request header.
+    Keys are created and managed by organization admins and are provisioned per organization,
+    scoped to what the integration needs.
+  applies_to:
+  - Kodex Verification API
+  - Kodex Request Portal API
+  sources:
+  - https://www.kodexglobal.com/api
+  - https://docs.kodexapi.com/request-portal/reference/request-api
+  - https://docs.kodexapi.com/verifications/reference/
+- name: OAuth (user-context)
+  type: oauth2
+  description: Kodex documents OAuth for user-context flows, described as the same auth
+    posture as the portal. No authorization/token endpoints, flows, or scope reference
+    are published on the public surface, so no flows are recorded here.
+  flows: []
+  sources:
+  - https://www.kodexglobal.com/api
+portal_authentication:
+  sso: true
+  description: Enterprise SSO and centralized access management through the customer's
+    existing identity provider, with automated provisioning, role-based permissions,
+    and granular admin controls.
+  source: https://www.kodexglobal.com/security-compliance
+audit:
+  description: Every API call is logged to the same audit trail as the Kodex application,
+    giving one source of truth across both surfaces.
+  source: https://www.kodexglobal.com/api
