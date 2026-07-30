@@ -1,0 +1,38 @@
+generated: '2026-07-19'
+method: searched
+source: https://www.kodexglobal.com/api
+notes: Kodex documents a demo environment for integration testing and an in-browser
+  interactive reference. No test keys, magic identifiers, or fixture values are published
+  on the public surface — access is provisioned per organization — so none are recorded
+  here.
+environments:
+- name: demo
+  purpose: Build and validate an integration end to end before production keys are
+    issued.
+  test_data: Kodex supplies test data in the demo environment.
+  access: Provisioned by the Kodex account team, per organization.
+  evidence: '"Kodex provides a demo environment with test data, so your engineers can
+    build and validate the integration end to end before production keys are issued."'
+- name: production
+  purpose: Live requests against the Kodex Global Network.
+  access: Production API keys issued per organization after demo validation.
+interactive_console:
+  url: https://docs.kodexapi.com/
+  description: The interactive reference on the documentation hub lets you try calls
+    in the browser.
+  gated: true
+  notes: Reference pages render client-side and appear to require a login; no spec
+    download is exposed.
+key_separation:
+  documented: partial
+  notes: Kodex documents separate demo and production keys but publishes no key prefix
+    or mode indicator convention.
+test_values:
+  cards: []
+  identifiers: []
+  notes: None published. Do not invent test identifiers for this provider.
+free_public_tool:
+  url: https://www.kodexglobal.com/verify
+  description: A free public lookup that checks any law enforcement email or domain
+    against the Kodex Global Network — useful for exercising the verification concept
+    without credentials.

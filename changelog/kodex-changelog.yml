@@ -1,0 +1,59 @@
+generated: '2026-07-19'
+method: searched
+source: https://www.kodexglobal.com/blog
+notes: Kodex publishes no dedicated developer changelog. Product changes are published
+  as a dated monthly "Kodex Product Update" post on the company blog; that series is
+  captured here as the changelog of record. Only the recent window is recorded.
+scheme: monthly-product-update-posts
+current_version: v1 (API path version; product updates are dated, not numbered)
+entries:
+- date: '2026-07'
+  title: Kodex Product Update | July 2026
+  url: https://www.kodexglobal.com/blog
+  breaking: false
+  notes: Referenced as a featured post; individual post URL not present in the sitemap
+    at time of capture.
+- date: '2026-06-11'
+  title: 'June 2026 Product Update: Bulk Targets & On-Demand Verifications'
+  url: https://www.kodexglobal.com/blog/kodex-product-update-june-2026
+  breaking: false
+  additions:
+  - Normalized target search — matches the same target across requests despite case
+    and formatting differences, including phone number formats, running against encrypted
+    data.
+  - Bulk target submission — agencies can upload and group many targets at once on
+    large requests.
+  - '"Prefer not to disclose" option for a target''s role at submission time.'
+  - Enforce produce / do-not-produce decisions per target through data production,
+    with an auditable record of what was shared.
+  - On-demand verifications — enterprise teams request agent verifications by jurisdiction
+    and service tier through the existing reverification flow.
+  - PagerDuty integration — route Kodex request alerts to PagerDuty on-call rotations.
+- date: '2026-05'
+  title: Kodex Product Update | May 2026
+  url: https://www.kodexglobal.com/blog/kodex-product-update-may-2026
+  breaking: false
+  additions:
+  - Accepted request sources
+  - Jurisdiction-based access
+  - Assigning requests across multiple organizations
+- date: '2026-02'
+  title: Kodex Product Update | February 2026
+  url: https://www.kodexglobal.com/blog/kodex-product-update-february-2026
+  breaking: false
+- date: '2026-01'
+  title: Kodex Product Update | January 2026
+  url: https://www.kodexglobal.com/blog/kodex-product-update-january-2026
+  breaking: false
+- date: '2025-12'
+  title: Kodex Product Update | December 2025
+  url: https://www.kodexglobal.com/blog/kodex-product-update-december-2025
+  breaking: false
+- date: '2025-11'
+  title: Kodex Product Update | November 2025
+  url: https://www.kodexglobal.com/blog/kodex-product-update-november-2025
+  breaking: false
+- date: '2025-10'
+  title: Kodex Product Update | October 2025
+  url: https://www.kodexglobal.com/blog/kodex-product-update-october-2025
+  breaking: false

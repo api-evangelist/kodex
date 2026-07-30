@@ -1,0 +1,56 @@
+generated: '2026-07-19'
+method: searched
+source: https://www.kodexglobal.com/.well-known/
+hosts:
+- host: https://www.kodexglobal.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 200
+    file: kodex-security.txt
+    notes: RFC 9116. Contact mailto:security@kodexglobal.com. Expires field (2026-05-07)
+      is in the past as of this probe.
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+- host: https://app.kodexglobal.com
+  notes: Single-page application returns HTTP 200 with an HTML shell for every path;
+    no /.well-known document is genuinely served. Recorded as none rather than 200.
+  documents:
+  - path: /.well-known/security.txt
+    status: 200
+    served: html-spa-catchall
+    real: false
+  - path: /.well-known/openid-configuration
+    status: 200
+    served: html-spa-catchall
+    real: false
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    served: html-spa-catchall
+    real: false
+- host: https://api.kodexglobal.com
+  notes: Host resolves but returns HTTP 403 for all probed paths.
+  documents:
+  - path: /.well-known/security.txt
+    status: 403
+  - path: /.well-known/openid-configuration
+    status: 403
+- host: https://docs.kodexapi.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 302
+    notes: Redirects to the docs home page (ReadMe hosted docs).
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+llms_txt:
+- url: https://www.kodexglobal.com/llms.txt
+  status: 404
+- url: https://docs.kodexapi.com/llms.txt
+  status: 404

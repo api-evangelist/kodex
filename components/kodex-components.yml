@@ -1,0 +1,24 @@
+generated: '2026-07-19'
+method: searched
+source: https://www.kodexglobal.com/integrations
+notes: Kodex ships no published JS element library or web-component package. It does
+  ship an embeddable, customer-facing surface — "Sign in with Kodex" — which is captured
+  here. No loader script, CDN URL, or npm package is published, so none is recorded.
+families:
+- name: Sign in with Kodex
+  kind: hosted-embedded-surface
+  description: Puts the Kodex Global Network's verification engine behind a single
+    sign-in button on the customer's own legal center or portal, so law enforcement
+    requesters are verified on the customer's surface rather than on Kodex's.
+  url: https://www.kodexglobal.com/integrations
+  independent: true
+  notes: Documented as one of three independent integration surfaces alongside the
+    Verification API and the Data Production API.
+- name: Kodex Verify (public lookup)
+  kind: hosted-tool
+  description: Free public page to look up any law enforcement email or domain against
+    the network.
+  url: https://www.kodexglobal.com/verify
+  embeddable: false
+loaders: []
+packages: []

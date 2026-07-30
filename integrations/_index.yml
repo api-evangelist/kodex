@@ -1,0 +1,42 @@
+generated: '2026-07-19'
+method: searched
+source: https://www.kodexglobal.com/integrations
+notes: Kodex names and maintains a small set of integrations. No Arazzo workflows are
+  authored for them because Kodex publishes no machine-readable OpenAPI to ground verified
+  operationIds; every entry is listing-only until a spec is available.
+integrations:
+- slug: jira
+  label: Jira
+  partner: atlassian
+  category: project-management
+  use_case: Verified law enforcement requests route directly into Jira workflows, fulfillment
+    happens in Jira, and status syncs back to Kodex automatically. Bidirectional.
+  arazzo: null
+  status: pending-provider-spec
+- slug: hummingbird
+  label: Hummingbird
+  partner: hummingbird
+  category: compliance
+  use_case: Kodex request and response activity syncs into Hummingbird for compliance
+    teams running on that platform. Bidirectional.
+  arazzo: null
+  status: pending-provider-spec
+- slug: pagerduty
+  label: PagerDuty
+  partner: pagerduty
+  category: incident-response
+  use_case: Route Kodex request alerts to PagerDuty so the on-call responder is paged
+    the moment a new law enforcement request arrives.
+  arazzo: null
+  status: pending-provider-spec
+  since: '2026-06'
+  source: https://www.kodexglobal.com/blog/kodex-product-update-june-2026
+- slug: custom
+  label: Custom integration
+  partner: null
+  category: custom
+  use_case: Scoped integrations into internal case management, ticketing, and workflow
+    systems built by the Kodex team on top of the Verification and Data Production
+    APIs.
+  arazzo: null
+  status: bespoke

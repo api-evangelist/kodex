@@ -1,0 +1,67 @@
+generated: '2026-07-19'
+method: searched
+source: https://www.kodexglobal.com/security-compliance
+notes: No downloadable OpenAPI is published, so nothing here is derived from a spec.
+  Every entry is either a claim published on kodexglobal.com or an observed property
+  of the published API surface.
+standards:
+- id: soc2
+  conforms: true
+  evidence: '"SOC2, GDPR, PCI compliant" listed under enterprise-grade capabilities
+    on https://www.kodexglobal.com/'
+- id: gdpr
+  conforms: true
+  evidence: '"SOC2, GDPR, PCI compliant" (https://www.kodexglobal.com/); multi-country
+    data residency and configurable retention documented on /security-compliance'
+- id: pci-dss
+  conforms: true
+  evidence: '"SOC2, GDPR, PCI compliant" (https://www.kodexglobal.com/)'
+- id: iso-27001
+  conforms: unknown
+  evidence: not claimed on the public surface
+- id: hipaa
+  conforms: unknown
+  evidence: not claimed on the public surface
+- id: fedramp
+  conforms: unknown
+  evidence: not claimed on the public surface
+- id: oauth2
+  conforms: partial
+  evidence: OAuth documented for user-context flows on https://www.kodexglobal.com/api;
+    no authorization server metadata, flows, or scopes published
+- id: rfc9116-security-txt
+  conforms: true
+  evidence: https://www.kodexglobal.com/.well-known/security.txt returns 200 (Expires
+    field was in the past at time of capture)
+- id: rfc9457-problem-details
+  conforms: unknown
+  evidence: no public error reference; interactive reference is gated
+- id: saml-sso
+  conforms: true
+  evidence: Enterprise SSO through the customer's existing identity provider with automated
+    provisioning and role-based permissions (/security-compliance)
+- id: encryption-in-transit-and-at-rest
+  conforms: true
+  evidence: '"All data in Kodex is encrypted in transit and at rest" (/security-compliance)'
+- id: calea
+  conforms: true
+  evidence: Kodex publishes a CALEA lawful-access page at https://www.kodexglobal.com/calea
+- id: eu-e-evidence
+  conforms: true
+  evidence: Dedicated EU e-Evidence readiness program and guides at https://www.kodexglobal.com/eu-e-evidence
+- id: usa-patriot-act-314b
+  conforms: true
+  evidence: Section 314(b) information-sharing page at https://www.kodexglobal.com/section-314b
+compliance_program:
+  url: https://www.kodexglobal.com/security-compliance
+  certifications:
+  - SOC 2
+  - PCI DSS
+  frameworks:
+  - GDPR
+  - CALEA
+  - EU e-Evidence
+  - USA PATRIOT Act Section 314(b)
+  audit_exports: Audit-ready exports available directly from the platform, with a complete
+    timestamped audit trail of every action and request.
+  data_residency: Multi-country data residency, configurable per workflow.

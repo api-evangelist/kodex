@@ -1,0 +1,37 @@
+generated: '2026-07-19'
+method: searched
+source: https://www.kodexglobal.com/api
+type: Webhooks
+spec_type: none
+notes: Kodex documents a webhook surface but publishes no AsyncAPI document. The webhook
+  catalog below is captured from the provider's published API page; the full event
+  payload reference lives in the gated interactive reference at docs.kodexapi.com.
+  No event names or payload fields are invented here.
+delivery:
+  direction: kodex-to-subscriber
+  method: POST
+  target: subscriber-supplied webhook URL
+  signed: true
+  logged: true
+  evidence: '"The response is signed, logged, and replayable in your own systems."'
+webhooks:
+- name: Status webhooks
+  trigger: An agent's credentials or standing change — Kodex detects a problem with
+    an agent account and notifies the subscriber's server.
+  method: POST
+  target: '{your_webhook_url}'
+  payload_hint: JSON object keyed on the agent email address (documented example shows
+    an `email` field).
+  purpose: Notify integrators the moment a law enforcement agent's credentials change,
+    so downstream systems can re-evaluate trust.
+  source: https://www.kodexglobal.com/api
+related_products:
+- name: Verification API
+  relation: Status webhooks carry ongoing changes to verification standing established
+    through POST /v1/verification/lookup.
+alerting_integrations:
+- name: PagerDuty
+  description: Kodex request alerts can be routed to PagerDuty so an on-call responder
+    is paged when a new law enforcement request arrives.
+  since: '2026-06'
+  source: https://www.kodexglobal.com/blog/kodex-product-update-june-2026

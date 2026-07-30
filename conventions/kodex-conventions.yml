@@ -1,0 +1,52 @@
+generated: '2026-07-19'
+method: searched
+source: https://www.kodexglobal.com/api
+docs: https://docs.kodexapi.com/
+notes: Captured from the provider's published API page and documentation hub. Kodex
+  publishes no downloadable OpenAPI definition and its interactive reference requires
+  a login, so conventions not stated publicly are recorded as unknown rather than
+  inferred.
+authentication:
+  style: api-key-header
+  header: X-API-Key
+  scoped: true
+  oauth: user-context flows documented, no public flow/scope reference
+  artifact: authentication/kodex-authentication.yml
+media_type:
+  request: application/json
+  response: application/json
+  evidence: '"JSON in, JSON out" (https://www.kodexglobal.com/api)'
+versioning:
+  scheme: uri-path
+  current: v1
+  evidence: published endpoints POST /v1/verification/lookup and GET /v1/requests/{request_id}/targets
+  artifact: lifecycle/kodex-lifecycle.yml
+idempotency:
+  supported: unknown
+  notes: No idempotency key header or retry-safety contract is documented on the public
+    surface. No Idempotency pointer is emitted in apis.yml for this provider.
+pagination:
+  style: unknown
+  notes: Not documented publicly.
+error_envelope:
+  format: unknown
+  notes: No public error reference or problem-type registry was found; the interactive
+    reference at docs.kodexapi.com is gated.
+rate_limiting:
+  documented: false
+  notes: No published rate-limit headers or quotas.
+request_tracing:
+  header: unknown
+  audit: Every API call writes to the same audit trail as the Kodex application, described
+    as one source of truth across both surfaces.
+response_integrity:
+  signed: true
+  evidence: 'Published API page: "The response is signed, logged, and replayable in
+    your own systems."'
+webhooks:
+  supported: true
+  signed: true
+  artifact: asyncapi/kodex-webhooks.yml
+sandbox:
+  supported: true
+  artifact: sandbox/kodex-sandbox.yml
