@@ -1,22 +1,160 @@
 aid: kodex
 name: Kodex
-description: Kodex is a company surfaced as a portfolio company of a16z and added to the API Evangelist
-  network as a stub for enrichment. This profile is a lead awaiting the enrichment pipeline.
+description: 'Kodex (Albatross Technologies) operates the Kodex Global Network, a platform
+  for managing law enforcement and government data requests — subpoenas, warrants, and
+  emergency disclosure requests — for crypto exchanges, fintechs, banks, and telecommunications
+  companies. The platform covers request intake and automation, requester verification
+  against a network of 15K+ government agencies, threat intelligence, encrypted data
+  production and delivery, cost recovery, and transparency reporting. Kodex exposes the
+  same network programmatically through the Kodex API: a Verification API for real-time
+  requester lookups, a Targets (Data Production) API for automating production on verified
+  requests, and status webhooks for agent credential changes. Developer documentation is
+  published on ReadMe at docs.kodexapi.com as two projects — Request Portal and Verifications
+  API — both authenticated with scoped organization API keys sent in an X-API-Key header.'
+accessModel:
+  pricing: unknown
+  onboarding: self-serve
+  trial: false
+  try_now: false
+  public: false
+  label: Self-serve signup
+  confidence: medium
+  source:
+  - authentication
+  generated: '2026-07-22'
+  method: derived
+image: https://files.readme.io/e8089f1952ef71694a5e2b27b67dd3f885d17bd265d6c6232d9a47fac9308d93-Kodex_PrimaryLogo_COLOR.png
 url: https://raw.githubusercontent.com/api-evangelist/kodex/refs/heads/main/apis.yml
 x-type: company
 x-source: vc-portfolio
 x-backed-by:
 - a16z
-x-tier: stub
-x-tier-reason: portfolio-lead
 specificationVersion: '0.20'
 created: '2026-07-17'
-modified: '2026-07-17'
+modified: '2026-07-19'
 tags:
 - Company
-apis: []
+- Law Enforcement
+- Compliance
+- Legal
+- Identity Verification
+- Government
+- Security
+- Threat Intelligence
+- Data Requests
+- Trust and Safety
+apis:
+- aid: kodex:verification-api
+  name: Kodex Verification API
+  description: 'Real-time verification of law enforcement requesters. Pass a requester
+    email address to the lookup endpoint and receive the agent''s standing, their agency''s
+    status, and the domain''s risk level, checked against the Kodex Global Network in real
+    time. Published endpoint: POST /v1/verification/lookup. Authenticated with a scoped
+    organization API key sent in an X-API-Key header.'
+  humanURL: https://docs.kodexapi.com/verifications/reference/
+  baseURL: https://app.kodexglobal.com
+  tags:
+  - Verification
+  - Identity
+  - Law Enforcement
+  - Risk
+  properties:
+  - type: Documentation
+    url: https://docs.kodexapi.com/verifications/reference/
+  - type: APIReference
+    url: https://docs.kodexapi.com/verifications/reference/
+  - type: Authentication
+    url: authentication/kodex-authentication.yml
+- aid: kodex:request-portal-api
+  name: Kodex Request Portal API
+  description: 'The Request Portal (Targets / Data Production) API creates and manages
+    data requests and automates producing data on verified requests — targets, attachments,
+    and messages. Published endpoint: GET /v1/requests/{request_id}/targets. Drafts surface
+    for review before they leave your environment, and every call writes to the same audit
+    trail as the Kodex application. Authenticated with a scoped organization API key sent
+    in an X-API-Key header.'
+  humanURL: https://docs.kodexapi.com/request-portal/reference/request-api
+  baseURL: https://app.kodexglobal.com
+  tags:
+  - Requests
+  - Data Production
+  - Legal
+  - Workflow
+  properties:
+  - type: Documentation
+    url: https://docs.kodexapi.com/request-portal/reference/request-api
+  - type: APIReference
+    url: https://docs.kodexapi.com/request-portal/reference/request-api
+  - type: Authentication
+    url: authentication/kodex-authentication.yml
+common:
+- type: Website
+  url: https://www.kodexglobal.com/
+- type: DeveloperPortal
+  url: https://docs.kodexapi.com/
+- type: Documentation
+  url: https://docs.kodexapi.com/
+- type: APIReference
+  url: https://docs.kodexapi.com/request-portal/reference/request-api
+- type: ProductOverview
+  url: https://www.kodexglobal.com/api
+- type: Blog
+  url: https://www.kodexglobal.com/blog
+- type: Support
+  url: https://www.kodexglobal.com/contact
+- type: GitHubOrganization
+  url: https://github.com/albatross-technologies
+- type: SignUp
+  url: https://www.kodexglobal.com/contact
+- type: Login
+  url: https://app.kodexglobal.com/login
+- type: TermsOfService
+  url: https://www.kodexglobal.com/terms-of-use
+- type: PrivacyPolicy
+  url: https://www.kodexglobal.com/privacy-policy
+- type: StatusPage
+  url: https://status.kodexglobal.com/
+- type: Security
+  url: https://www.kodexglobal.com/.well-known/security.txt
+- type: Compliance
+  url: https://www.kodexglobal.com/security-compliance
+- type: Authentication
+  url: authentication/kodex-authentication.yml
+- type: Conventions
+  url: conventions/kodex-conventions.yml
+- type: Lifecycle
+  url: lifecycle/kodex-lifecycle.yml
+- type: ChangeLog
+  url: changelog/kodex-changelog.yml
+- type: Conformance
+  url: conformance/kodex-conformance.yml
+- type: WellKnown
+  url: well-known/kodex-well-known.yml
+- type: SecurityTxt
+  url: well-known/kodex-security.txt
+- type: DomainSecurity
+  url: security/kodex-domain-security.yml
+- type: VulnerabilityDisclosure
+  url: security/kodex-vulnerability-disclosure.yml
+- type: Webhooks
+  url: asyncapi/kodex-webhooks.yml
+- type: Sandbox
+  url: sandbox/kodex-sandbox.yml
+- type: Components
+  url: components/kodex-components.yml
+- type: Integrations
+  url: integrations/_index.yml
+- type: MCPServer
+  url: mcp/kodex-mcp.yml
+- type: LLMsTxt
+  url: llms/kodex-llms.txt
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
+x-enrichment:
+  date: '2026-07-19'
+  status: backfilled
+  pass: local-v1
+  note: backfilled from .gitignore signal + verified work evidence
