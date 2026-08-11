@@ -46,11 +46,11 @@ tags:
 apis:
 - aid: kodex:verification-api
   name: Kodex Verification API
-  description: 'Real-time verification of law enforcement requesters. Pass a requester
-    email address to the lookup endpoint and receive the agent''s standing, their agency''s
-    status, and the domain''s risk level, checked against the Kodex Global Network in real
-    time. Published endpoint: POST /v1/verification/lookup. Authenticated with a scoped
-    organization API key sent in an X-API-Key header.'
+  description: >-
+    Real-time verification of law enforcement requesters. Pass a requester email address to the lookup
+    endpoint and receive the agent's standing, their agency's status, and the domain's risk level, checked
+    against the Kodex Global Network in real time. Published endpoint: POST /v1/verification/lookup. Authenticated
+    with a scoped organization API key sent in an X-API-Key header.
   humanURL: https://docs.kodexapi.com/verifications/reference/
   baseURL: https://app.kodexglobal.com
   tags:
@@ -67,12 +67,12 @@ apis:
     url: authentication/kodex-authentication.yml
 - aid: kodex:request-portal-api
   name: Kodex Request Portal API
-  description: 'The Request Portal (Targets / Data Production) API creates and manages
-    data requests and automates producing data on verified requests — targets, attachments,
-    and messages. Published endpoint: GET /v1/requests/{request_id}/targets. Drafts surface
-    for review before they leave your environment, and every call writes to the same audit
-    trail as the Kodex application. Authenticated with a scoped organization API key sent
-    in an X-API-Key header.'
+  description: >-
+    The Request Portal (Targets / Data Production) API creates and manages data requests and automates
+    producing data on verified requests — targets, attachments, and messages. Published endpoint: GET
+    /v1/requests/{request_id}/targets. Drafts surface for review before they leave your environment, and
+    every call writes to the same audit trail as the Kodex application. Authenticated with a scoped organization
+    API key sent in an X-API-Key header.
   humanURL: https://docs.kodexapi.com/request-portal/reference/request-api
   baseURL: https://app.kodexglobal.com
   tags:
@@ -87,6 +87,76 @@ apis:
     url: https://docs.kodexapi.com/request-portal/reference/request-api
   - type: Authentication
     url: authentication/kodex-authentication.yml
+- aid: kodex:kodex-attachments-api
+  name: Kodex Attachments API
+  description: The Attachments API from Kodex — 4 operation(s) for attachments.
+  humanURL: https://docs.kodexapi.com/verifications/reference/
+  baseURL: https://app.kodexglobal.com
+  tags:
+  - Attachments
+  properties:
+  - type: OpenAPI
+    url: openapi/kodex-attachments-api-openapi.yml
+- aid: kodex:kodex-configs-api
+  name: Kodex Configs API
+  description: The Configs API from Kodex — 2 operation(s) for configs.
+  humanURL: https://docs.kodexapi.com/verifications/reference/
+  baseURL: https://app.kodexglobal.com
+  tags:
+  - Configs
+  properties:
+  - type: OpenAPI
+    url: openapi/kodex-configs-api-openapi.yml
+- aid: kodex:kodex-messages-api
+  name: Kodex Messages API
+  description: The Messages API from Kodex — 2 operation(s) for messages.
+  humanURL: https://docs.kodexapi.com/verifications/reference/
+  baseURL: https://app.kodexglobal.com
+  tags:
+  - Messages
+  properties:
+  - type: OpenAPI
+    url: openapi/kodex-messages-api-openapi.yml
+- aid: kodex:kodex-requests-api
+  name: Kodex Requests API
+  description: The Requests API from Kodex — 3 operation(s) for requests.
+  humanURL: https://docs.kodexapi.com/verifications/reference/
+  baseURL: https://app.kodexglobal.com
+  tags:
+  - Requests
+  properties:
+  - type: OpenAPI
+    url: openapi/kodex-requests-api-openapi.yml
+- aid: kodex:kodex-service-api
+  name: Kodex Service API
+  description: The Service API from Kodex — 3 operation(s) for service.
+  humanURL: https://docs.kodexapi.com/verifications/reference/
+  baseURL: https://app.kodexglobal.com
+  tags:
+  - Service
+  properties:
+  - type: OpenAPI
+    url: openapi/kodex-service-api-openapi.yml
+- aid: kodex:kodex-targets-api
+  name: Kodex Targets API
+  description: The Targets API from Kodex — 4 operation(s) for targets.
+  humanURL: https://docs.kodexapi.com/verifications/reference/
+  baseURL: https://app.kodexglobal.com
+  tags:
+  - Targets
+  properties:
+  - type: OpenAPI
+    url: openapi/kodex-targets-api-openapi.yml
+- aid: kodex:kodex-verification-api
+  name: Kodex Verification API
+  description: The Verification API from Kodex — 3 operation(s) for verification.
+  humanURL: https://docs.kodexapi.com/verifications/reference/
+  baseURL: https://app.kodexglobal.com
+  tags:
+  - Verification
+  properties:
+  - type: OpenAPI
+    url: openapi/kodex-verification-api-openapi.yml
 common:
 - type: Website
   url: https://www.kodexglobal.com/

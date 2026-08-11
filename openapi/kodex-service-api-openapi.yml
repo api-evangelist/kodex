@@ -1,0 +1,269 @@
+openapi: 3.2.0
+info:
+  title: Kodex API V2 Service API
+  description: Secure API for interacting with Kodex requests. This documentation is intended for exploratory understanding of the API.
+  version: 2.0.0
+  contact: {}
+  x-source-url: https://dash.readme.com/api/v1/api-registry/5l4ot1fdms7ss6wc
+  x-documentation-url: https://docs.kodexapi.com/
+  x-last-validated: '2026-08-10'
+  x-provenance: first-party — retrieved from the provider's own documentation host
+servers:
+- url: https://api.demo.kodexglobal.com
+  description: Demo Server
+tags:
+- name: Service
+paths:
+  /v2/check:
+    get:
+      operationId: CheckControllerV2_getHealthCheck
+      summary: Check API health
+      description: Check that the API is alive, without authentication.
+      parameters: []
+      responses:
+        '200':
+          description: Data fetched successfully
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+      tags:
+      - Service
+  /v2/logs/kapi:
+    get:
+      operationId: LogsController_getLogs
+      summary: Retrieve access logs for KAPI
+      description: 'Returns a list of KAPI access logs for your organization.
+
+
+        All API keys in your organization are included. In future updates, results may be limited based on the API key''s scope.
+
+
+        If a cursor is not provided, the endpoint will return the {limit} most recent logs.'
+      parameters:
+      - description: A cursor representing the position from which to start the search. To get the latest provide 'LATEST'
+        required: false
+        name: cursor
+        in: query
+        schema:
+          type: string
+      - description: Maximum number of logs to return (50 - 1000). May return less than the limit if there are no further logs.
+        required: false
+        name: limit
+        in: query
+        schema:
+          minimum: 50
+          maximum: 1000
+          default: 500
+          type: number
+      responses:
+        '200':
+          description: Logs retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetLogsResponse'
+        '400':
+          description: Invalid parameter
+        '403':
+          description: The provided API key was incorrect
+      tags:
+      - Service
+      security:
+      - api-key: []
+  /v2/logs/request:
+    get:
+      operationId: LogsController_getRequestAuditEvents
+      summary: Stream request audit events
+      description: 'Returns a cursor-paginated feed of actions taken on your organization''s requests
+
+        (views, downloads, edits, target changes) for ingestion into a SIEM. Events carry no sensitive
+
+        content — only the action, actor, request, and actor signal such as IP address.
+
+
+        A parent-org key streams events for the parent and all active child orgs; any other key streams
+
+        only its own org. Events lag live activity by up to several minutes. If a cursor is not provided,
+
+        the endpoint returns the {limit} most recent events and only tails forward from there — to ingest
+
+        all existing history, make the first call with cursor ''EARLIEST_AVAILABLE''.'
+      parameters:
+      - description: A cursor marking where to resume. Provide 'LATEST' for the most recent events, or the cursor returned by a previous response.
+        required: false
+        name: cursor
+        in: query
+        schema:
+          type: string
+      - description: Maximum number of events to return (50 - 1000).
+        required: false
+        name: limit
+        in: query
+        schema:
+          minimum: 50
+          maximum: 1000
+          default: 500
+          type: number
+      responses:
+        '200':
+          description: Audit events retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAuditEventsResponse'
+        '400':
+          description: Invalid parameter
+        '403':
+          description: The provided API key was incorrect
+      tags:
+      - Service
+      security:
+      - api-key: []
+components:
+  schemas:
+    GetAuditEventsResponse:
+      type: object
+      properties:
+        events:
+          description: 'Audit events in ingestion order (ascending event id), which is the gapless order to page through. Note this is not necessarily `timestamp` order: an event that was ingested late gets a later id, so `timestamp` is not guaranteed monotonic within the feed.'
+          type: array
+          items:
+            $ref: '#/components/schemas/AuditEvent'
+        hasMore:
+          type: boolean
+          description: Whether there are more results to fetch
+        cursor:
+          type: string
+          description: Cursor marking the last event returned
+      required:
+      - events
+      - hasMore
+    GetLogsResponse:
+      type: object
+      properties:
+        logs:
+          description: Array of log entries returned by the query (maximum 1000 entries per response)
+          type: array
+          items:
+            $ref: '#/components/schemas/LogEntry'
+        hasMore:
+          type: boolean
+          description: Whether there are more results to fetch
+        cursor:
+          type: string
+          description: A cursor representing the position from which to start the search
+      required:
+      - logs
+      - hasMore
+    AuditEvent:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Stable, monotonically increasing event id. A 64-bit integer serialized as a decimal string (it can exceed the safe JavaScript number range) — treat it as an opaque token.
+          example: '10423'
+        source:
+          type: string
+          description: Which system table the event came from
+          example: REQUEST_ACTION
+        eventType:
+          type: string
+          description: The action that occurred
+          example: ATTACHMENT_DOWNLOAD
+        timestamp:
+          format: date-time
+          type: string
+          description: When the action occurred
+          example: '2026-07-16T12:34:56.789Z'
+        requestId:
+          type: string
+          description: Request the action was taken on
+        requestNumber:
+          type: string
+          description: The request's human-readable number, or null if it has none yet
+          example: REQ-1042
+        actorUserId:
+          type: string
+          description: User who performed the action
+        actorEmail:
+          type: string
+          description: Email of the acting user
+        actorOrgId:
+          type: string
+          description: Acting user's organization
+        targetId:
+          type: string
+          description: Target the action affected, if any
+        ipAddress:
+          type: string
+          description: IP address of the actor. Included only for your own organization's users; null for external actors (e.g. a requesting agent), whose network signals are not exposed.
+          example: 192.168.1.1
+        fingerprintId:
+          type: string
+          description: Browser fingerprint of the actor. Included only for your own organization's users; null for external actors (e.g. a requesting agent).
+        isSystemGenerated:
+          type: boolean
+          description: Whether the action was performed by the system
+        metadata:
+          type:
+          - object
+          - 'null'
+          description: 'Non-sensitive, source-dependent event metadata, or null. For field-change events: `{ changedFields: string[] }`. For request actions: `{ isKapiGenerated, agentHasMfaEnabled }`.'
+      required:
+      - id
+      - source
+      - eventType
+      - timestamp
+      - requestId
+      - isSystemGenerated
+    LogEntry:
+      type: object
+      properties:
+        timestamp:
+          format: date-time
+          type: string
+          description: Timestamp when the log entry was created
+          example: '2024-06-01T12:34:56.789Z'
+        path:
+          type: string
+          description: API path that was accessed
+          example: /v1/resource
+        responseCode:
+          type: number
+          description: HTTP response code returned
+          example: 200
+        apiKeyFragment:
+          type: string
+          description: Reference of the API key used for the request
+          example: ksk_zcxTosZJSLWwsuIxtQQG2Q
+        userAgent:
+          type: string
+          description: User agent string from the request
+          example: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)
+        ipAddress:
+          type: string
+          description: IP address of the requester
+          example: 192.168.1.1
+        responseSize:
+          type: string
+          description: Size of the response in bytes
+          example: 512
+      required:
+      - timestamp
+      - path
+      - responseCode
+      - apiKeyFragment
+      - userAgent
+      - ipAddress
+  securitySchemes:
+    api-key:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: 'Credential used to authenticate and authorize access to the Kodex Verification API
+
+
+        Learn how to [create an API key](https://docs.kodexapi.com/verifications/reference/generate-and-manage-keys).'

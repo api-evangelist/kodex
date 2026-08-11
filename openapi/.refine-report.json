@@ -1,0 +1,40 @@
+{
+  "provider": "kodex",
+  "sources": [
+    "kodex-kodex-api-v2.yml",
+    "kodex-kodex-verification-api-v1.yml",
+    "kodex-kodex-verification-api-v2.yml"
+  ],
+  "outputs": [
+    "kodex-attachments-api-openapi.yml",
+    "kodex-configs-api-openapi.yml",
+    "kodex-messages-api-openapi.yml",
+    "kodex-requests-api-openapi.yml",
+    "kodex-service-api-openapi.yml",
+    "kodex-targets-api-openapi.yml",
+    "kodex-verification-api-openapi.yml"
+  ],
+  "archived": [
+    "archived openapi/kodex-kodex-api-v2.yml",
+    "archived openapi/kodex-kodex-verification-api-v1.yml",
+    "archived openapi/kodex-kodex-verification-api-v2.yml"
+  ],
+  "errors": [],
+  "warnings": [],
+  "notes": [
+    "kodex-kodex-api-v2.yml: upgraded openapi 3.0.0 -> OpenAPI 3.2.0",
+    "kodex-kodex-api-v2.yml: declared missing tag: Attachments",
+    "kodex-kodex-api-v2.yml: declared missing tag: Configs",
+    "kodex-kodex-api-v2.yml: declared missing tag: Messages",
+    "kodex-kodex-api-v2.yml: declared missing tag: Requests",
+    "kodex-kodex-api-v2.yml: declared missing tag: Service",
+    "kodex-kodex-api-v2.yml: declared missing tag: Targets",
+    "kodex-kodex-verification-api-v1.yml: upgraded openapi 3.0.0 -> OpenAPI 3.2.0",
+    "kodex-kodex-verification-api-v1.yml: declared missing tag: Verification",
+    "kodex-kodex-verification-api-v2.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "kodex-kodex-verification-api-v2.yml: declared missing tag: Verification",
+    "tag 'Verification' spans 2 source specs (kodex-kodex-verification-api-v1.yml, kodex-kodex-verification-api-v2.yml): per-path servers applied",
+    "apis.yml register: written (+7 apis, 9 total)"
+  ],
+  "skipped": []
+}
