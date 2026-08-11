@@ -1,0 +1,190 @@
+openapi: 3.2.0
+info:
+  title: Kodex API V2 Configs API
+  description: Secure API for interacting with Kodex requests. This documentation is intended for exploratory understanding of the API.
+  version: 2.0.0
+  contact: {}
+  x-source-url: https://dash.readme.com/api/v1/api-registry/5l4ot1fdms7ss6wc
+  x-documentation-url: https://docs.kodexapi.com/
+  x-last-validated: '2026-08-10'
+  x-provenance: first-party — retrieved from the provider's own documentation host
+servers:
+- url: https://api.demo.kodexglobal.com
+  description: Demo Server
+tags:
+- name: Configs
+paths:
+  /v2/config/request:
+    get:
+      operationId: ConfigsControllerV2_genRequestConfigs
+      summary: Get request configuration
+      description: Retrieves configuration fields for a specific type of law enforcement request
+      parameters:
+      - description: 'Kind of law enforcement request for which to return the configuration fields
+
+
+          Possible values:
+
+          - `RECORDS`: Request for user data or content under legal authority
+
+          - `PRESERVATION`: Request to retain data for future legal access
+
+          - `INQUIRY`: General question or clarification submitted by the requestor'
+        name: type
+        in: query
+        required: true
+        schema:
+          enum:
+          - RECORDS
+          - PRESERVATION
+          - INQUIRY
+          type: string
+      responses:
+        '200':
+          description: The request config was successfully retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RequestConfigResponse'
+        '403':
+          description: "The provided API key\n    was incorrect or the request was not found."
+      tags:
+      - Configs
+      security:
+      - api-key: []
+  /v2/config/target:
+    get:
+      operationId: ConfigsControllerV2_getTargetConfigs
+      summary: Get target configuration
+      description: Retrieves target field configurations
+      parameters: []
+      responses:
+        '200':
+          description: The target config was successfully retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TargetConfigResponse'
+        '403':
+          description: "The provided API key\n    was incorrect or the request was not found."
+      tags:
+      - Configs
+      security:
+      - api-key: []
+components:
+  schemas:
+    TargetConfigResponse:
+      type: object
+      properties:
+        targetSelectorTypes:
+          description: List of target selector types that can be used to identify targets in requests
+          example:
+          - Full Name
+          - Email Address
+          - Phone Number
+          type: array
+          items:
+            type: string
+        targetIdentifierTypes:
+          description: List of target identifier types that can be used for mapping internal identifiers from the customer's system
+          example:
+          - User ID
+          - Account Number
+          - Device ID
+          type: array
+          items:
+            type: string
+        metadataTypes:
+          description: List of metadata types that can be associated with target identifiers for additional information
+          example:
+          - Active within activity period
+          - Last known location
+          - Account status
+          type: array
+          items:
+            type: string
+      required:
+      - targetSelectorTypes
+      - targetIdentifierTypes
+      - metadataTypes
+    RequestConfigResponse:
+      type: object
+      properties:
+        legalProcessTypes:
+          description: List of categories that can be used to classify law enforcement requests based on the legal mechanism or procedural stage associated with a request
+          example:
+          - Subpoena
+          - Search Warrant
+          - Emergency
+          type: array
+          items:
+            type: string
+        caseNatureTypes:
+          description: List of categories that can be used to classify law enforcement requests based on the type of criminal activity under investigation
+          example:
+          - Homicide
+          - Stalking
+          - Terrorism
+          type: array
+          items:
+            type: string
+        customizationTypes:
+          description: List of metadata fields that can be used to classify law enforcement requests of the specified type
+          type: array
+          items:
+            $ref: '#/components/schemas/ListConfigResponse'
+      required:
+      - legalProcessTypes
+      - caseNatureTypes
+      - customizationTypes
+    ListConfigResponse:
+      type: object
+      properties:
+        label:
+          type: string
+          description: Identifier for the customization field, used to reference the field in the UI or API
+          example: informationRequested
+        options:
+          description: List of selectable values available for the customization field, if applicable
+          example:
+          - Subscriber Information
+          - Basic Account Details
+          - Message Content
+          type: array
+          items:
+            type: string
+        variant:
+          type: string
+          description: 'Describes the type of customization field, indicating how its value was collected or structured.
+
+
+            Possible values:
+
+            - `SingleOption`: Single value selected from the provided options
+
+            - `MultiOption`: Multiple values selected from the provided options
+
+            - `Text`: Free-form text value
+
+            - `Date`: Date in YYYY-MM-DD format
+
+            - `CountrySelect`: Country name selected from a predefined list'
+          enum:
+          - SingleOption
+          - MultiOption
+          - Text
+          - Date
+          - CountrySelect
+      required:
+      - label
+      - options
+      - variant
+  securitySchemes:
+    api-key:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: 'Credential used to authenticate and authorize access to the Kodex Verification API
+
+
+        Learn how to [create an API key](https://docs.kodexapi.com/verifications/reference/generate-and-manage-keys).'
