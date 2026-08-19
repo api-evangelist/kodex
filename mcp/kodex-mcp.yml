@@ -2,11 +2,10 @@ generated: '2026-07-19'
 method: derived
 status: candidate
 source: https://www.kodexglobal.com/api
-notes: No official or hosted Kodex MCP server was found (docs.kodexapi.com, the company
-  site, npm, and the public GitHub org were checked). The tool list below is a candidate
-  derived only from the three API surfaces Kodex publishes by name and path; it is
-  a proposal, not a provider claim. No operation is invented beyond those published
-  endpoints.
+notes: No official or hosted Kodex MCP server was found (docs.kodexapi.com, the company site, npm, and
+  the public GitHub org were checked). The tool list below is a candidate derived only from the three
+  API surfaces Kodex publishes by name and path; it is a proposal, not a provider claim. No operation
+  is invented beyond those published endpoints.
 server:
   name: kodex
   transport: http
@@ -18,28 +17,32 @@ authentication:
   artifact: authentication/kodex-authentication.yml
 tools:
 - name: verify_requester
-  description: Look up a law enforcement requester's email address and return their
-    verification standing, their agency's status, and the domain's risk level from
-    the Kodex Global Network.
+  description: Look up a law enforcement requester's email address and return their verification standing,
+    their agency's status, and the domain's risk level from the Kodex Global Network.
   source_operation: POST https://app.kodexglobal.com/v1/verification/lookup
   source_doc: https://docs.kodexapi.com/verifications/reference/
   action_class: read
   consequence: read
 - name: get_request_targets
-  description: Retrieve the targets associated with a verified data request, for automated
-    data production against the customer's own systems of record.
+  description: Retrieve the targets associated with a verified data request, for automated data production
+    against the customer's own systems of record.
   source_operation: GET https://app.kodexglobal.com/v1/requests/{request_id}/targets
   source_doc: https://docs.kodexapi.com/request-portal/reference/request-api
   action_class: read
   consequence: read
   sensitivity: high
-  notes: Returns law enforcement request target data; any agent-facing deployment should
-    gate this behind human review and audit, consistent with Kodex's draft-review-before-delivery
-    model.
+  notes: Returns law enforcement request target data; any agent-facing deployment should gate this behind
+    human review and audit, consistent with Kodex's draft-review-before-delivery model.
 events:
 - name: status_webhook
   description: Subscribe to agent credential/standing change notifications.
   artifact: asyncapi/kodex-webhooks.yml
 gaps:
-- No published OpenAPI definition, so the full operation surface (requests, attachments,
-  messages) cannot be enumerated without gated documentation access.
+- No published OpenAPI definition, so the full operation surface (requests, attachments, messages) cannot
+  be enumerated without gated documentation access.
+deployment:
+  mode: none
+  verified: derived
+  tools: 2
+  checked: '2026-08-12'
+  source: catalog MCP census
