@@ -79,6 +79,11 @@ apis:
   - Requests
   - Data Production
   - Legal
+  - Workflows
+  tags_raw:
+  - Requests
+  - Data Production
+  - Legal
   - Workflow
   properties:
   - type: Documentation
