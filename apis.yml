@@ -11,6 +11,17 @@ description: 'Kodex (Albatross Technologies) operates the Kodex Global Network, 
   requests, and status webhooks for agent credential changes. Developer documentation is
   published on ReadMe at docs.kodexapi.com as two projects — Request Portal and Verifications
   API — both authenticated with scoped organization API keys sent in an X-API-Key header.'
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: false
+  label: Hosted service · you call their endpoint
+  confidence: medium
+  source:
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 accessModel:
   pricing: unknown
   onboarding: self-serve
