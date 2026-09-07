@@ -1,0 +1,211 @@
+openapi: 3.2.0
+info:
+  title: Kodex API V2 Messages API
+  description: Secure API for interacting with Kodex requests. This documentation is intended for exploratory understanding of the API.
+  version: 2.0.0
+  contact: {}
+  x-source-url: https://dash.readme.com/api/v1/api-registry/5l4ot1fdms7ss6wc
+  x-documentation-url: https://docs.kodexapi.com/
+  x-last-validated: '2026-08-10'
+  x-provenance: first-party — retrieved from the provider's own documentation host
+servers:
+- url: https://api.demo.kodexglobal.com
+  description: Demo Server
+tags:
+- name: Messages
+paths:
+  /v2/request/{requestId}/message:
+    get:
+      operationId: MessagesControllerV2_getExternalMessages
+      summary: List all external messages
+      description: Retrieves a complete list of external messages for a request
+      parameters:
+      - name: requestId
+        required: true
+        in: path
+        description: Unique Kodex identifier of the request
+        schema:
+          example: 123e4567-e89b-42d3-a456-426614174000
+          type: string
+      - description: Page number of the results
+        required: false
+        name: page
+        in: query
+        schema:
+          default: 1
+          type: number
+      - description: Number of results returned per page
+        required: false
+        name: pageLength
+        in: query
+        schema:
+          minimum: 5
+          maximum: 100
+          default: 25
+          type: number
+      - description: 'Specifies the field and direction used to order the results
+
+
+          This has the format `sort=field:asc|desc`. Results can only be sorted by `createdAt` to order results by submission time in ascending or descending order.'
+        required: false
+        name: sort
+        in: query
+        schema:
+          default: createdAt:asc
+          type: string
+      responses:
+        '200':
+          description: The external message information was successfully retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponseExternalMessageResponse'
+        '400':
+          description: Invalid parameter
+        '403':
+          description: The provided API key was incorrect.
+      tags:
+      - Messages
+      security:
+      - api-key: []
+  /v2/request/{requestId}/message/{messageId}:
+    get:
+      operationId: MessagesControllerV2_getExternalMessage
+      summary: Get a single external message
+      description: Retrieves a single external message for a request
+      parameters:
+      - name: requestId
+        required: true
+        in: path
+        description: Unique Kodex identifier of the request
+        schema:
+          example: 123e4567-e89b-42d3-a456-426614174000
+          type: string
+      - name: messageId
+        required: true
+        in: path
+        description: Unique Kodex identifier of the message
+        schema:
+          example: 123e4567-e89b-42d3-a456-426614174000
+          type: string
+      responses:
+        '200':
+          description: The external message information was successfully retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExternalMessageResponse'
+        '400':
+          description: Invalid parameter
+        '403':
+          description: The provided API key was incorrect.
+        '404':
+          description: Message not found
+      tags:
+      - Messages
+      security:
+      - api-key: []
+components:
+  schemas:
+    MessageCreatedBy:
+      type: object
+      properties:
+        email:
+          type: string
+          description: Email address of the user who created the message
+        name:
+          type: string
+          description: Name of the user who created the message
+        role:
+          type: string
+          description: 'Role of the user who created the message
+
+            Possible values:
+
+            - `ANALYST`: Internal user who reviews and responds to law enforcement requests
+
+            - `AGENT`: Law enforcement official who submitted the request'
+      required:
+      - name
+      - role
+    PaginatedResponseExternalMessageResponse:
+      type: object
+      properties:
+        total:
+          type: number
+          description: Total number of results returned
+          example: 101
+        page:
+          type: number
+          description: Page number of the results
+          example: 1
+        pageLength:
+          type: number
+          description: Number of results returned per page
+          example: 25
+        data:
+          type: array
+          description: List of result objects returned by the query
+          items:
+            $ref: '#/components/schemas/ExternalMessageResponse'
+      required:
+      - total
+      - page
+      - pageLength
+      - data
+    ExternalMessageResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique Kodex identifier (UUID) of the message
+          example: 123e4567-e89b-12d3-a456-426614174000
+        createdAt:
+          format: date-time
+          type: string
+          description: Timestamp when the message was created in the UI or via the API, in ISO 8601 format
+        updatedAt:
+          format: date-time
+          type: string
+          description: Timestamp when the message was last modified, in ISO 8601 format
+        $message:
+          type: string
+          description: Message content returned in HTML format
+        actionType:
+          type: string
+          description: Request-related event during which the message was created
+          example: COMMENT
+        isRead:
+          type: boolean
+          description: Indicates whether the recipient has read the message
+        hasAttachments:
+          type: boolean
+          description: Indicates whether the message has any attachments
+        requestAttachmentIds:
+          description: List of unique Kodex identifiers (UUIDs) for attachments associated with the message
+          type: array
+          items:
+            type: string
+        createdBy:
+          description: Information about the user who created the message
+          allOf:
+          - $ref: '#/components/schemas/MessageCreatedBy'
+      required:
+      - id
+      - createdAt
+      - updatedAt
+      - $message
+      - actionType
+      - isRead
+      - hasAttachments
+      - requestAttachmentIds
+      - createdBy
+  securitySchemes:
+    api-key:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: 'Credential used to authenticate and authorize access to the Kodex Verification API
+
+
+        Learn how to [create an API key](https://docs.kodexapi.com/verifications/reference/generate-and-manage-keys).'
