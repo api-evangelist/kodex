@@ -1,0 +1,558 @@
+openapi: 3.2.0
+info:
+  title: Kodex Verification API
+  version: '1.0'
+  description: 'Operations tagged Verification across 2 of this provider''s published API definitions: kodex-kodex-verification-api-v1.yml, kodex-kodex-verification-api-v2.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.demo.kodexglobal.com
+  description: Demo Server
+tags:
+- name: Verification
+paths:
+  /v1/verification/lookup:
+    post:
+      operationId: VerificationControllerV1_lookup
+      summary: Request requestor verification
+      description: Retrieves the current verification opinion of a law enforcement agent.
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostVerificationLookupClass'
+      responses:
+        '200':
+          description: Verification information regarding the requestor. If the requestor does not have an account on Kodex, only status will be returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerificationLookupPostResponse'
+        '400':
+          description: The request failed because the provided data was invalid
+        '403':
+          description: The request failed because the provided API key was incorrect
+      tags:
+      - Verification
+      security:
+      - api-key: []
+    servers:
+    - url: https://api.demo.kodexglobal.com
+      description: Demo Server
+  /v1/verification/subscribe:
+    post:
+      operationId: VerificationControllerV1_subscribe
+      summary: Subscribe to law enforcement agent status change notifications
+      description: Adds email addresses to the notification subscription list for an organization and returns all current subscriptions.
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostVerificationSubscribeClass'
+      responses:
+        '200':
+          description: Subscription status for each email address provided in the request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerificationSubscribePostResponse'
+        '400':
+          description: The request failed because the provided data was invalid
+        '403':
+          description: The request failed because the provided API key was incorrect
+      tags:
+      - Verification
+      security:
+      - api-key: []
+    get:
+      operationId: VerificationControllerV1_getSubscriptions
+      summary: Get law enforcement agent status subscription information
+      description: Retrieves subscription status for provided email addresses within an organization.
+      parameters:
+      - name: emails
+        required: true
+        in: query
+        description: Emails of the law enforcement agents to check subscription status for
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Subscription status for each email address provided in the request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VerificationSubscribeGetResponseItem'
+        '400':
+          description: The request failed because the provided data was invalid
+        '403':
+          description: The request failed because the provided API key was incorrect
+      tags:
+      - Verification
+      security:
+      - api-key: []
+    delete:
+      operationId: VerificationControllerV1_unsubscribe
+      summary: Unsubscribe from law enforcement agent status notifications
+      description: Removes email addresses from the notification subscription list for an organization.
+      parameters:
+      - name: emails
+        required: true
+        in: query
+        description: Emails of the law enforcement agents you want to unsubscribe from
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Whether the request was successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerificationSubscribeDeleteResponse'
+        '400':
+          description: The request failed because the provided data was invalid
+        '403':
+          description: The request failed because the provided API key was incorrect
+      tags:
+      - Verification
+      security:
+      - api-key: []
+    servers:
+    - url: https://api.demo.kodexglobal.com
+      description: Demo Server
+  /v2/verification/lookup:
+    post:
+      operationId: postVerificationLookup
+      summary: Look up agent verification status
+      description: Retrieves the verification projection for a law-enforcement agent. Returns `requestor` (always populated), `domain` (always populated), and `agency` (populated when the agent's email domain resolves to a known agency). Synthetic outcomes (no user, opted out) surface as `NO_ACCOUNT` or `PRIVACY_OPT_OUT` on `requestor.status`.
+      tags:
+      - Verification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerificationLookupRequest'
+      responses:
+        '200':
+          description: Verification result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerificationLookupResponse'
+        '400':
+          description: The provided data was invalid
+        '403':
+          description: The provided API key was incorrect or lacks the required scope
+      security:
+      - api-key: []
+    servers:
+    - url: https://api.demo.kodexglobal.com
+      description: Demo Server
+components:
+  schemas:
+    VerificationSubscribeGetResponseItem:
+      type: object
+      properties:
+        email:
+          type: string
+          description: Email of the law enforcement agent
+        subscriptionDate:
+          format: date-time
+          type:
+          - string
+          - 'null'
+          description: Date of subscription, or null if not subscribed
+      required:
+      - email
+      - subscriptionDate
+    VerificationSubscribeDeleteResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Whether the request was successful
+      required:
+      - success
+    VerificationLookupPostResponse:
+      type: object
+      properties:
+        requestor:
+          description: Representation of the law enforcement agent involved in the verification process
+          allOf:
+          - $ref: '#/components/schemas/VerificationLookupPostResponseRequestor'
+        agency:
+          $ref: '#/components/schemas/VerificationLookupPostResponseAgency'
+      required:
+      - requestor
+      - agency
+    PostVerificationLookupRequestor:
+      type: object
+      properties:
+        email:
+          type: string
+          description: Email address of the requestor
+      required:
+      - email
+    PostVerificationSubscribeClass:
+      type: object
+      properties:
+        emails:
+          description: Emails of the law enforcement agents you want to subscribe to
+          type: array
+          items:
+            type: string
+      required:
+      - emails
+    VerificationLookupPostResponseRequestor:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - PENDING_VERIFICATION
+          - PRIVACY_OPT_OUT
+          - NO_ACCOUNT
+          - SUSPENDED
+          - ACTIVE
+          description: "High-level state of the requestor’s Kodex account, representing their trust and verification status.\n\nPossible values:\n- `PENDING_VERIFICATION`: User account request undergoing verification\n- `PRIVACY_OPT_OUT`: Account with third-party data sharing disabled\n- `NO_ACCOUNT`: No registered account\n- `SUSPENDED`: Untrusted, inactive account\n- `ACTIVE`: Usable account that may be unverified, partially trusted, or fully verified\n    "
+        phoneNumber:
+          type: string
+          description: 'Phone number of the requestor in [E.164](https://www.itu.int/rec/T-REC-E.164/) format
+
+
+            Example (maximum valid length of 15 digits): +880181234567890'
+        substatus:
+          type: string
+          description: Sub-classification of a requestor’s account when in VERIFIED or SUSPENDED status
+        statusDetail:
+          type: string
+          description: Specific reason associated with the requestor’s verification status
+        statusDescription:
+          type: string
+          description: User-friendly explanation of the requestor’s verification status
+        phoneNumberExtension:
+          type: string
+          description: Extension of the requestor at the provided `phoneNumber`
+        latestLoginIpAddress:
+          type: string
+          description: IP address from which the requestor most recently logged in to Kodex in IPv4 or IPv6 format
+        edrStatus:
+          type: string
+          enum:
+          - APPROVED
+          - NO_DATA
+          description: 'Authorization state indicating a Kodex-verified requestor has completed incremental enhanced review (such as direct agency confirmation) to validate credentials and lawful affiliation, enabling submission of emergency data requests without legal process in cases of imminent harm
+
+
+            Possible values:
+
+            - `APPROVED`: Authorization verified
+
+            - `NO_DATA`: Authorization never initiated or in progress'
+        latestActionDate:
+          format: date-time
+          type: string
+          description: Timestamp of the latest verification or suspension action on this account, in ISO 8601 format
+        lastVerifiedDate:
+          format: date-time
+          type: string
+          description: Timestamp indicating the most recent instance a user successfully passed Kodex verification checks. This field is returned in UTC (ISO 8601).
+      required:
+      - status
+    VerificationSubscribePostResponse:
+      type: object
+      properties:
+        subscriptions:
+          description: Subscription status for each email address provided in the request
+          type: array
+          items:
+            type: string
+      required:
+      - subscriptions
+    VerificationLookupPostResponseAgency:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - DOMAIN_VERIFIED
+          - HIGH_RISK
+          - NO_ACCOUNT
+          - PENDING_VERIFICATION
+          - SUSPENDED
+          description: 'Verification state of the agency associated with the requestor, based on whether the requestor’s email domain is recognized and trusted within Kodex
+
+
+            Possible values:
+
+            - `NO_ACCOUNT`: No registered domain found. Displays as Domain not found in the Check Status UI
+
+            - `DOMAIN_VERIFIED`: Verified and trusted domain with access to all companies. Displays as Domain found and trusted in the Check Status UI
+
+            - `HIGH_RISK`: Partially trusted domain with limited access due to risk factors. Displays as Domain found, high risk in the Check Status UI
+
+            - `PENDING_VERIFICATION`: Agency undergoing verification
+
+            - `SUSPENDED`: Untrusted agency that has been deactivated in Kodex'
+        country:
+          type: string
+          description: Country of the agency in uppercase [ISO 3166-1 alpha-2](https://www.iso.org/glossary-for-iso-3166.html) format
+      required:
+      - status
+    PostVerificationLookupClass:
+      type: object
+      properties:
+        context:
+          type: string
+          enum:
+          - LOGIN
+          - REGISTRATION
+          - REQUEST_SUBMISSION
+          - NON_INTERACTIVE
+          description: 'Scenario in which the requestor is being verified
+
+
+            Possible values:
+
+            - `LOGIN`: Returning requestor portal authentication
+
+            - `REGISTRATION`: New account creation in your portal
+
+            - `REQUEST_SUBMISSION`: Active request process in your portal
+
+            - `NON_INTERACTIVE`: Background verification via scripts or bulk processing, without requestor interaction'
+        requestor:
+          description: Representation of the law enforcement agent involved in the verification process
+          allOf:
+          - $ref: '#/components/schemas/PostVerificationLookupRequestor'
+        subscribeToStatusNotifications:
+          type: boolean
+          description: Determines whether Agent Status Notifications should be sent for the provided email
+      required:
+      - context
+      - requestor
+    LabeledId:
+      type: object
+      required:
+      - id
+      - label
+      properties:
+        id:
+          type: string
+          description: Stable machine identifier
+        label:
+          type: string
+          description: Human-readable label
+    DomainBlock:
+      type: object
+      description: Domain verification status and risk information. Always populated.
+      required:
+      - status
+      properties:
+        status:
+          type: string
+          enum:
+          - NO_ACCOUNT
+          - PENDING_VERIFICATION
+          - UNVERIFIED
+          - VERIFIED
+          - VERIFIED-CHINA
+          - SUSPENDED
+          - BLOCKLIST
+          description: "Verification state of the domain.\n- `NO_ACCOUNT`: Domain was not found in the Kodex database.\n- `PENDING_VERIFICATION`: Domain is associated with a user who has\n  not yet been verified.\n\n- `UNVERIFIED`: Domain is associated with a user and agency granted\n  platform access through a customer-approved exception.\n\n- `VERIFIED`: Domain has been verified and is active.\n- `VERIFIED-CHINA`: Domain has been verified and is active for\n  Chinese law enforcement requests only.\n\n- `SUSPENDED`: Domain has been suspended by Kodex.\n- `BLOCKLIST`: Domain has been placed on Kodex's blocklist."
+    AgencyBlock:
+      type: object
+      description: Agency associated with the agent's email domain.
+      required:
+      - status
+      properties:
+        status:
+          type: string
+          enum:
+          - NO_ACCOUNT
+          - PENDING_VERIFICATION
+          - ACTIVE
+          - SUSPENDED
+          - MULTIPLE
+          description: 'Verification state of the agency.
+
+            - `NO_ACCOUNT`: No agency found related to the user or domain entered.
+
+            - `PENDING_VERIFICATION`: The user account associated with this agency is pending verification.
+
+            - `ACTIVE`: The agency related to this user is active.
+
+            - `SUSPENDED`: The agency related to this user has been suspended.
+
+            - `MULTIPLE`: Multiple agencies were found to be associated with this domain.'
+        country:
+          oneOf:
+          - type: string
+          - type: 'null'
+          description: Country of the agency in uppercase ISO 3166-1 alpha-2 format
+    RequestorBlock:
+      type: object
+      description: Agent verification status and details. Always populated. Synthetic statuses use NO_ACCOUNT or PRIVACY_OPT_OUT.
+      required:
+      - status
+      - statusDetail
+      - statusContributors
+      - permissions
+      - accessLevel
+      properties:
+        status:
+          type: string
+          enum:
+          - PENDING_VERIFICATION
+          - PRIVACY_OPT_OUT
+          - NO_ACCOUNT
+          - SUSPENDED
+          - UNVERIFIED
+          - ACTIVE
+          description: "High-level state of the agent's Kodex account.\n- `PENDING_VERIFICATION`: Account request is awaiting verification by Kodex.\n- `PRIVACY_OPT_OUT`: Agent has opted out of third-party data sharing.\n- `NO_ACCOUNT`: No registered account found.\n- `SUSPENDED`: Account has been rejected or deactivated by Kodex.\n- `UNVERIFIED`: Account is active but has not been verified by Kodex.\n  The statusDetail field provides additional context.\n\n- `ACTIVE`: Account is active and verified by Kodex."
+        statusDetail:
+          $ref: '#/components/schemas/LabeledId'
+          description: Specific reason associated with the agent's verification status
+        statusDescription:
+          oneOf:
+          - type: string
+          - type: 'null'
+          description: User-friendly explanation of the agent's verification status
+        statusContributors:
+          type: array
+          items:
+            $ref: '#/components/schemas/LabeledId'
+          description: Additional context factors associated with the agent's verification status
+        permissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Permission'
+          description: Permissions currently granted to this agent.
+        accessLevel:
+          type: string
+          enum:
+          - FULL_ACCESS
+          - LIMITED_ACCESS
+          - NO_ACCESS
+          description: 'Level of access this agent has on the Kodex platform.
+
+            - `FULL_ACCESS`: Can sign in and has full access to Kodex''s portfolio.
+
+            - `LIMITED_ACCESS`: Can sign in but has access to a limited number of companies.
+
+            - `NO_ACCESS`: Not allowed to sign in to the Kodex network.'
+        name:
+          oneOf:
+          - type: string
+          - type: 'null'
+          description: Agent's display name
+        email:
+          oneOf:
+          - type: string
+          - type: 'null'
+          description: Agent's email address
+        position:
+          oneOf:
+          - type: string
+          - type: 'null'
+          description: Agent's role or position title
+        phoneNumber:
+          oneOf:
+          - type: string
+          - type: 'null'
+          description: Agent's phone number in E.164 format (null when nothing on file)
+        phoneNumberExtension:
+          oneOf:
+          - type: string
+          - type: 'null'
+          description: Extension digits for the agent's phone number
+        latestLoginIpAddress:
+          oneOf:
+          - type: string
+          - type: 'null'
+          description: IP address from which the agent most recently logged in (IPv4 or IPv6)
+        latestActionDate:
+          oneOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          description: Timestamp of the latest verification or suspension action on this account, in ISO 8601 format
+        lastVerifiedDate:
+          oneOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          description: Most recent instance the agent successfully passed Kodex verification checks. Null if never verified.
+        lastLoginDate:
+          oneOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          description: Timestamp of the agent's most recent login to Kodex, in ISO 8601 format. Null if the agent has never logged in.
+    Permission:
+      type: object
+      required:
+      - key
+      properties:
+        key:
+          type: string
+          enum:
+          - EDR_ALLOWED
+          - DOWNLOAD_ALLOWED
+          - REAPPLY_ALLOWED
+          description: 'Permission grant.
+
+            - `EDR_ALLOWED`: Agent is allowed to submit emergency data requests.
+
+            - `DOWNLOAD_ALLOWED`: Agent is allowed to download files.
+
+            - `REAPPLY_ALLOWED`: Suspended agent is allowed to reapply.'
+    VerificationLookupRequest:
+      type: object
+      required:
+      - requestor
+      properties:
+        requestor:
+          type: object
+          required:
+          - email
+          properties:
+            email:
+              type: string
+              format: email
+              description: Email address of the agent to look up
+    VerificationLookupResponse:
+      type: object
+      required:
+      - requestor
+      - domain
+      properties:
+        requestor:
+          $ref: '#/components/schemas/RequestorBlock'
+        domain:
+          $ref: '#/components/schemas/DomainBlock'
+        agency:
+          oneOf:
+          - $ref: '#/components/schemas/AgencyBlock'
+          - type: 'null'
+          description: Agency block. Non-null when the agent has a known organization or the email domain resolves to a recognized agency.
+  securitySchemes:
+    api-key:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: 'Credential used to authenticate and authorize access to the Kodex Verification API
+
+
+        Learn how to [create an API key](https://docs.kodexapi.com/verifications/reference/generate-and-manage-keys).'
+x-refined-from:
+- kodex-kodex-verification-api-v1.yml
+- kodex-kodex-verification-api-v2.yml

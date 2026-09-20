@@ -1,0 +1,670 @@
+openapi: 3.2.0
+info:
+  title: Kodex API V2 Targets API
+  description: Secure API for interacting with Kodex requests. This documentation is intended for exploratory understanding of the API.
+  version: 2.0.0
+  contact: {}
+  x-source-url: https://dash.readme.com/api/v1/api-registry/5l4ot1fdms7ss6wc
+  x-documentation-url: https://docs.kodexapi.com/
+  x-last-validated: '2026-08-10'
+  x-provenance: first-party — retrieved from the provider's own documentation host
+servers:
+- url: https://api.demo.kodexglobal.com
+  description: Demo Server
+tags:
+- name: Targets
+paths:
+  /v2/request/{requestId}/target:
+    get:
+      operationId: TargetsControllerV2_getTarget
+      summary: List all targets for a request
+      description: Call this endpoint to get the target selector and identifier for a request
+      parameters:
+      - name: requestId
+        required: true
+        in: path
+        description: Unique Kodex identifier of the request
+        schema:
+          example: 123e4567-e89b-42d3-a456-426614174000
+          type: string
+      - description: Page number of the results
+        required: false
+        name: page
+        in: query
+        schema:
+          default: 1
+          type: number
+      - description: Number of results returned per page
+        required: false
+        name: pageLength
+        in: query
+        schema:
+          minimum: 5
+          maximum: 100
+          default: 25
+          type: number
+      - description: 'Specifies the field and direction used to order the results
+
+
+          This has the format `sort=field:asc|desc`. Results can only be sorted by `createdAt` to order results by submission time in ascending or descending order.'
+        required: false
+        name: sort
+        in: query
+        schema:
+          default: createdAt:asc
+          type: string
+      responses:
+        '200':
+          description: The target information was successfully retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponseTarget'
+        '400':
+          description: Invalid parameter
+        '403':
+          description: The provided API key was incorrect.
+      tags:
+      - Targets
+      security:
+      - api-key: []
+    post:
+      operationId: TargetsControllerV2_addTarget
+      summary: Add target selector to a request
+      description: Call this endpoint to add a target selector and associated identifiers to a request
+      parameters:
+      - name: requestId
+        required: true
+        in: path
+        description: Unique Kodex identifier of the request
+        schema:
+          example: 123e4567-e89b-42d3-a456-426614174000
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostRequestTargetRequestClass'
+      responses:
+        '201':
+          description: The target was successfully added to the request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Target'
+        '403':
+          description: "The provided API key\n      was incorrect or the request was not found."
+      tags:
+      - Targets
+      security:
+      - api-key: []
+  /v2/request/{requestId}/target/lookup:
+    post:
+      operationId: TargetsControllerV2_bulkTargetLookup
+      summary: Bulk add target lookup response to a request
+      description: 'Call this endpoint to add the results for multiple target lookups related to the same request. This will add and associate target selectors and identifiers.
+
+
+        > 🚧 A maximum of 25 lookups may be submitted in a single request.'
+      parameters:
+      - name: requestId
+        required: true
+        in: path
+        description: Unique Kodex identifier of the request
+        schema:
+          example: 123e4567-e89b-42d3-a456-426614174000
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostBulkTargetLookupRequestClass'
+      responses:
+        '201':
+          description: The target lookup responses were successfully added to the request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Target'
+        '403':
+          description: "The provided API key\n        was incorrect or the request was not found."
+      tags:
+      - Targets
+      security:
+      - api-key: []
+  /v2/request/{requestId}/target/{targetId}/lookup:
+    post:
+      operationId: TargetsControllerV2_addTargetLookup
+      summary: Add target lookup response to a request
+      description: Call this endpoint to add the results of a target lookup. This will add and associate target selectors and identifiers.
+      parameters:
+      - name: requestId
+        required: true
+        in: path
+        description: Unique Kodex identifier of the request
+        schema:
+          example: 123e4567-e89b-42d3-a456-426614174000
+          type: string
+      - name: targetId
+        required: true
+        in: path
+        description: Unique Kodex identifier of the target
+        schema:
+          example: 123e4567-e89b-42d3-a456-426614174000
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostRequestTargetLookupRequestClass'
+      responses:
+        '201':
+          description: The target lookup response was successfully added to the request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Target'
+        '403':
+          description: "The provided API key\n        was incorrect or the request was not found."
+      tags:
+      - Targets
+      security:
+      - api-key: []
+  /v2/request/{requestId}/target/{targetId}/identifier/{identifierId}:
+    patch:
+      operationId: TargetsControllerV2_updateIdentifier
+      summary: Update a target identifier
+      description: Call this endpoint to update the identifier on a target
+      parameters:
+      - name: requestId
+        required: true
+        in: path
+        description: Unique Kodex identifier of the request
+        schema:
+          example: 123e4567-e89b-42d3-a456-426614174000
+          type: string
+      - name: targetId
+        required: true
+        in: path
+        description: Unique Kodex identifier of the target
+        schema:
+          example: 123e4567-e89b-42d3-a456-426614174000
+          type: string
+      - name: identifierId
+        required: true
+        in: path
+        description: Unique Kodex identifier of the identifier
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchIdentifierClass'
+      responses:
+        '200':
+          description: The identifier was successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TargetIdentifier'
+        '403':
+          description: The provided API key was incorrect.
+      tags:
+      - Targets
+      security:
+      - api-key: []
+components:
+  schemas:
+    PaginatedResponseTarget:
+      type: object
+      properties:
+        total:
+          type: number
+          description: Total number of results returned
+          example: 101
+        page:
+          type: number
+          description: Page number of the results
+          example: 1
+        pageLength:
+          type: number
+          description: Number of results returned per page
+          example: 25
+        data:
+          type: array
+          description: List of result objects returned by the query
+          items:
+            $ref: '#/components/schemas/Target'
+      required:
+      - total
+      - page
+      - pageLength
+      - data
+    PostRequestTargetLookupRequestClass:
+      type: object
+      properties:
+        lookupResponseType:
+          type: string
+          enum:
+          - NetworkFailure
+          - CompletedDoesNotExist
+          - CompletedWithData
+          - InvalidData
+          description: 'Result of a lookup attempt for the target selector
+
+
+            Possible values:
+
+            - `NetworkFailure`: The lookup failed due to a network error.
+
+            - `CompletedDoesNotExist`: The lookup completed but no matching data was found.
+
+            - `CompletedWithData`: The lookup completed and data was successfully returned.
+
+            - `InvalidData`: The lookup completed but the data provided was invalid or incomplete.'
+        identifiers:
+          description: Mappings between request form selectors and internal identifiers from the customer's system
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateTargetIdentifier'
+      required:
+      - lookupResponseType
+    TargetIdentifier:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique Kodex identifier for the target identifier (internal identifiers from the customer's system)
+          example: 123e4567-e89b-12d3-a456-426614174000
+        $value:
+          type: string
+          description: Customer's internal system identifier that corresponds to the associated selector on the request form
+          example: '12345678'
+        type:
+          type: string
+          description: Category of the identifier
+        status:
+          type: string
+          enum:
+          - ACCEPTED
+          - REJECTED
+          - NEEDS_REVIEW
+          description: 'Indicates whether the identifier yielded data
+
+
+            Possible values:
+
+            -`ACCEPTED`: Data was found. This corresponds to Produce in the UI.
+
+            -`REJECTED`: No data was found. This corresponds to Do not produce in the UI.
+
+            -`NEEDS_REVIEW`: Data availability has not yet been assessed.'
+        metadata:
+          description: Integration partner custom data fields associated with the identifier
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentifierMetadataKeyValues'
+      required:
+      - id
+      - $value
+      - type
+      - status
+      - metadata
+    PatchIdentifierClass:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - ACCEPTED
+          - REJECTED
+          - NEEDS_REVIEW
+    TargetLookup:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique Kodex identifier of the lookup attempt
+          example: 123e4567-e89b-12d3-a456-426614174000
+        createdAt:
+          format: date-time
+          type: string
+          description: Timestamp when the lookup response was created in the UI or via the API, in ISO 8601 format
+        updatedAt:
+          format: date-time
+          type: string
+          description: Timestamp when the lookup was last modified, in ISO 8601 format
+        lookupType:
+          type: string
+          description: 'Manner in which the lookup was executed
+
+
+            Possible values:
+
+            - `Manual`: Entered directly by an analyst
+
+            - `PublicApi`: Triggered via the API'
+          example: PublicApi
+        responseType:
+          type: string
+          enum:
+          - NetworkFailure
+          - CompletedDoesNotExist
+          - CompletedWithData
+          - InvalidData
+          description: 'Result of a lookup attempt for the target selector
+
+
+            Possible values:
+
+            - `NetworkFailure`: The lookup failed due to a network error.
+
+            - `CompletedDoesNotExist`: The lookup completed but no matching data was found.
+
+            - `CompletedWithData`: The lookup completed and data was successfully returned.
+
+            - `InvalidData`: The lookup completed but the data provided was invalid or incomplete.'
+      required:
+      - id
+      - createdAt
+      - updatedAt
+      - lookupType
+      - responseType
+    IdentifierMetadataKeyValues:
+      type: object
+      properties:
+        key:
+          type: string
+          description: Type of identifier metadata
+          example: Active within activity period
+        $value:
+          type: string
+          description: Identifier metadata returned from the automation associated with the identifier
+          example: 'True'
+      required:
+      - key
+      - $value
+    BulkTargetLookupClass:
+      type: object
+      properties:
+        lookupResponseType:
+          type: string
+          enum:
+          - NetworkFailure
+          - CompletedDoesNotExist
+          - CompletedWithData
+          - InvalidData
+          description: 'Result of a lookup attempt for the target selector
+
+
+            Possible values:
+
+            - `NetworkFailure`: The lookup failed due to a network error.
+
+            - `CompletedDoesNotExist`: The lookup completed but no matching data was found.
+
+            - `CompletedWithData`: The lookup completed and data was successfully returned.
+
+            - `InvalidData`: The lookup completed but the data provided was invalid or incomplete.'
+        identifiers:
+          description: Mappings between request form selectors and internal identifiers from the customer's system
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateTargetIdentifier'
+        targetId:
+          type: string
+          description: Unique Kodex identifier of the target that was looked up
+          example: 243e4567-e89b-12d3-a456-426614174000
+      required:
+      - lookupResponseType
+      - targetId
+    PostRequestTargetRequestClass:
+      type: object
+      properties:
+        $value:
+          type: string
+          description: Value entered by an agent or analyst corresponding to the specified type
+          example: Test User
+        type:
+          type: string
+          description: Category of the target
+          example: Full Name
+        status:
+          type: string
+          enum:
+          - ACCEPTED
+          - REJECTED
+          - NEEDS_REVIEW
+          description: 'Status of the target selector based on review of the submitted legal documentation
+
+
+            Possible values:
+
+            - `ACCEPTED`: Selector value matches the submitted legal request. This corresponds to Valid in the UI.
+
+            - `REJECTED`: Selector value does not match the submitted legal request. This corresponds to Invalid in the UI.
+
+            - `NEEDS_REVIEW`: The selector value has not yet been compared to the submitted legal request.'
+        selectorsBeginAt:
+          type: string
+          description: Timestamp when the target selector's relevance period begins, in ISO 8601 format
+          example: '2024-01-01T00:00:00Z'
+        selectorsEndAt:
+          type: string
+          description: Timestamp when the target selector's relevance period ends, in ISO 8601 format
+          example: '2024-01-01T00:00:00Z'
+        selectorsTimezone:
+          type: string
+          description: Time zone context for the target selector's beginAt and endAt timestamps
+          example: EST
+        identifiers:
+          description: Mappings between request form selectors and internal identifiers from the customer's system
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateTargetIdentifier'
+      required:
+      - $value
+      - type
+      - status
+      - selectorsBeginAt
+      - selectorsEndAt
+      - selectorsTimezone
+      - identifiers
+    TargetGroup:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique Kodex identifier of the target group
+          example: 123e4567-e89b-12d3-a456-426614174000
+        title:
+          type: string
+          description: Human-readable title or name of the target group
+          example: Target 1
+        type:
+          type: string
+          enum:
+          - MISSING_PERSON
+          - SUSPECT
+          - PRIMARY_SUBJECT
+          - ASSOCIATE
+          - VICTIM
+          - WITNESS
+          - OBSERVED_IDENTIFIER
+          - PREFER_NOT_TO_DISCLOSE
+          - OTHER
+          description: 'Type of target group
+
+
+            Possible values:
+
+            - `MISSING_PERSON`: A missing person
+
+            - `SUSPECT`: A suspect in an investigation
+
+            - `PRIMARY_SUBJECT`: The primary subject of the request
+
+            - `ASSOCIATE`: An associate of the primary subject
+
+            - `VICTIM`: A victim
+
+            - `WITNESS`: A witness
+
+            - `OBSERVED_IDENTIFIER`: An observed identifier
+
+            - `PREFER_NOT_TO_DISCLOSE`: Role is known to the requestor but is not being shared
+
+            - `OTHER`: Other type'
+        $notes:
+          type: string
+          description: Additional notes about the target group
+          example: Subject was last seen on January 1, 2025
+      required:
+      - id
+      - title
+      - type
+    Target:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique Kodex identifier of the target
+          example: 243e4567-e89b-12d3-a456-426614174000
+        requestId:
+          type: string
+          description: Unique Kodex identifier of the request
+          example: 123e4567-e89b-12d3-a456-426614174000
+        targetGroup:
+          description: Human-readable information about the target group this target belongs to, if any
+          allOf:
+          - $ref: '#/components/schemas/TargetGroup'
+        createdAt:
+          format: date-time
+          type: string
+          description: Timestamp when the target was created, in ISO 8601 format
+        updatedAt:
+          format: date-time
+          type: string
+          description: Timestamp when the target was last modified, in ISO 8601 format
+        $value:
+          type: string
+          description: Value entered by an agent or analyst corresponding to the specified `type`
+          example: Test User
+        type:
+          type: string
+          description: Category of the target
+          example: Full Name
+        status:
+          type: string
+          enum:
+          - ACCEPTED
+          - REJECTED
+          - NEEDS_REVIEW
+          description: 'Status of the target selector based on review of the submitted legal documentation
+
+
+            Possible values:
+
+            - `ACCEPTED`: Selector value matches the submitted legal request. This corresponds to Valid in the UI.
+
+            - `REJECTED`: Selector value does not match the submitted legal request. This corresponds to Invalid in the UI.
+
+            - `NEEDS_REVIEW`: The selector value has not yet been compared to the submitted legal request.'
+        selectorsBeginAt:
+          type: string
+          description: Timestamp when the target selector's relevance period begins, in YYYY-MM-DD HH:MM:SS format
+        selectorsEndAt:
+          type: string
+          description: Timestamp when the target selector's relevance period ends, in YYYY-MM-DD HH:MM:SS format
+        selectorsTimezone:
+          type: string
+          description: Time zone context for the target selector's beginAt and endAt timestamps
+          example: UTC
+        identifiers:
+          description: Mappings between request form selectors and internal identifiers from the customer's system
+          type: array
+          items:
+            $ref: '#/components/schemas/TargetIdentifier'
+        lastLookupResponse:
+          type: string
+          description: Response type from the most recent lookup attempt, representing the latest known outcome for the target
+        lookupResponses:
+          description: Metadata pertaining to each lookup attempt
+          type: array
+          items:
+            $ref: '#/components/schemas/TargetLookup'
+      required:
+      - id
+      - requestId
+      - createdAt
+      - updatedAt
+      - $value
+      - type
+      - status
+      - selectorsBeginAt
+      - selectorsEndAt
+      - selectorsTimezone
+      - identifiers
+      - lookupResponses
+    PostBulkTargetLookupRequestClass:
+      type: object
+      properties:
+        lookups:
+          description: List of target lookups to be added to the request
+          type: array
+          items:
+            $ref: '#/components/schemas/BulkTargetLookupClass'
+      required:
+      - lookups
+    CreateTargetIdentifier:
+      type: object
+      properties:
+        $value:
+          type: string
+          description: Customer's internal system identifier that corresponds to the associated selector on the request form
+          example: '12345555'
+        type:
+          type: string
+          description: Category of the selector
+          example: User ID
+        status:
+          type: string
+          enum:
+          - ACCEPTED
+          - REJECTED
+          - NEEDS_REVIEW
+          description: 'Indicates whether the identifier yielded data
+
+
+            Possible values:
+
+            - `ACCEPTED`: Data was found. This corresponds to Produce in the UI.
+
+            - `REJECTED`: No data was found. This corresponds to Do not produce in the UI.
+
+            - `NEEDS_REVIEW`: Data availability has not yet been assessed.'
+        metadata:
+          description: Integration partner custom data fields associated with the selector
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentifierMetadataKeyValues'
+      required:
+      - $value
+      - type
+      - status
+  securitySchemes:
+    api-key:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: 'Credential used to authenticate and authorize access to the Kodex Verification API
+
+
+        Learn how to [create an API key](https://docs.kodexapi.com/verifications/reference/generate-and-manage-keys).'
