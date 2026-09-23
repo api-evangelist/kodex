@@ -1,0 +1,27 @@
+# Front Door AI Index — kodex — 2026-09-17
+# AI vocabulary counted on the provider's root page. Generated; do not edit.
+# `score` is null unless ownership is `own` — see front_door_ai.py.
+front_door_ai:
+  slug: kodex
+  lexicon_version: '1.0'
+  probed_at: '2026-09-17'
+  host: www.kodexglobal.com
+  final_host: www.kodexglobal.com
+  ownership: own
+  owner: kodex
+  shares_host_with: null
+  inherited_from: null
+  verdict: silent
+  score: 0
+  host_score: 0
+  density: 0.0
+  words: 1162
+  tiers:
+    agentic: 0
+    core: 0
+    model: 0
+  ambiguous: 10
+  top_terms:
+    agent: 5
+    intelligence: 4
+    automation: 1
