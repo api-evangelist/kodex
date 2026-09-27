@@ -1,0 +1,2231 @@
+openapi: 3.0.0
+paths:
+  /v2/check:
+    get:
+      operationId: CheckControllerV2_getHealthCheck
+      summary: Check API health
+      description: Check that the API is alive, without authentication.
+      parameters: []
+      responses:
+        '200':
+          description: Data fetched successfully
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+      tags:
+      - Service
+  /v2/config/request:
+    get:
+      operationId: ConfigsControllerV2_genRequestConfigs
+      summary: Get request configuration
+      description: Retrieves configuration fields for a specific type of law enforcement request
+      parameters:
+      - description: 'Kind of law enforcement request for which to return the configuration fields
+
+
+          Possible values:
+
+          - `RECORDS`: Request for user data or content under legal authority
+
+          - `PRESERVATION`: Request to retain data for future legal access
+
+          - `INQUIRY`: General question or clarification submitted by the requestor'
+        name: type
+        in: query
+        required: true
+        schema:
+          enum:
+          - RECORDS
+          - PRESERVATION
+          - INQUIRY
+          type: string
+      responses:
+        '200':
+          description: The request config was successfully retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RequestConfigResponse'
+        '403':
+          description: "The provided API key\n    was incorrect or the request was not found."
+      tags:
+      - Configs
+      security:
+      - api-key: []
+  /v2/config/target:
+    get:
+      operationId: ConfigsControllerV2_getTargetConfigs
+      summary: Get target configuration
+      description: Retrieves target field configurations
+      parameters: []
+      responses:
+        '200':
+          description: The target config was successfully retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TargetConfigResponse'
+        '403':
+          description: "The provided API key\n    was incorrect or the request was not found."
+      tags:
+      - Configs
+      security:
+      - api-key: []
+  /v2/request:
+    get:
+      operationId: RequestControllerV2_getManyRequests
+      summary: List all requests
+      description: Call this endpoint to list all requests that fit the query
+      parameters:
+      - description: Page number of the results
+        required: false
+        name: page
+        in: query
+        schema:
+          default: 1
+          type: number
+      - description: Number of results returned per page
+        required: false
+        name: pageLength
+        in: query
+        schema:
+          minimum: 5
+          maximum: 100
+          default: 25
+          type: number
+      - description: 'Specifies the field and direction used to order the results
+
+
+          This has the format `sort=field:asc|desc`. Results can only be sorted by `createdAt` to order
+          results by submission time in ascending or descending order.'
+        required: false
+        name: sort
+        in: query
+        schema:
+          default: createdAt:asc
+          type: string
+      - description: Filters requests created on and after the given timestamp (ISO 8601 format)
+        required: false
+        name: since
+        in: query
+        schema:
+          type: string
+      - description: Filters requests by the current phase in the processing workflow
+        required: false
+        name: status
+        in: query
+        schema:
+          type: string
+      - description: Excludes requests by the current phase in the processing workflow
+        required: false
+        name: statusNot
+        in: query
+        schema:
+          type: string
+      - description: Filters requests based on the review status of the target (object of inquiry)
+        required: false
+        name: target.status
+        in: query
+        schema:
+          type: string
+      - description: Excludes requests based on the review status of the target (object of inquiry)
+        required: false
+        name: target.statusNot
+        in: query
+        schema:
+          type: string
+      - description: Filters requests based on the type of the target (object of inquiry)
+        required: false
+        name: target.type
+        in: query
+        schema:
+          type: string
+      - description: Excludes requests based on the type of the target (object of inquiry)
+        required: false
+        name: target.typeNot
+        in: query
+        schema:
+          type: string
+      - description: Filters requests by values assigned to their associated tags
+        required: false
+        name: tags
+        in: query
+        schema:
+          type: string
+      - description: Excludes requests by values assigned to their associated tags
+        required: false
+        name: tagsNot
+        in: query
+        schema:
+          type: string
+      - description: Filters requests based on the lookupResponseType of the target (object of inquiry)
+        required: false
+        name: target.lookupResponseType
+        in: query
+        schema:
+          type: string
+      - description: Filters requests by the ID of their associated eEvidence authorization
+        required: false
+        name: eevidenceAuthorizationId
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: The request was successfully retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponseListRequestResponse'
+        '400':
+          description: Invalid parameter
+        '403':
+          description: The provided API key was incorrect.
+      tags:
+      - Requests
+      security:
+      - api-key: []
+  /v2/request/{requestId}:
+    get:
+      operationId: RequestControllerV2_getOneRequest
+      summary: Get information about a request
+      description: Call this endpoint to get information about a request.
+      parameters:
+      - name: requestId
+        required: true
+        in: path
+        description: Unique Kodex identifier of the request
+        schema:
+          example: 123e4567-e89b-42d3-a456-426614174000
+          type: string
+      responses:
+        '200':
+          description: The request was successfully retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetRequestV2Response'
+        '400':
+          description: Request ID is not a valid uuid
+        '403':
+          description: Forbidden resource
+        '404':
+          description: Request not found
+      tags:
+      - Requests
+      security:
+      - api-key: []
+    patch:
+      operationId: RequestControllerV2_updateRequest
+      summary: Update information about a request
+      description: Call this endpoint to update information in a request.
+      parameters:
+      - name: requestId
+        required: true
+        in: path
+        description: Unique Kodex identifier of the request
+        schema:
+          example: 123e4567-e89b-42d3-a456-426614174000
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchRequestClass'
+      responses:
+        '200':
+          description: The request was successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetRequestV2Response'
+        '400':
+          description: Request ID is not a valid uuid
+        '403':
+          description: Forbidden resource
+        '404':
+          description: Request not found
+      tags:
+      - Requests
+      security:
+      - api-key: []
+  /v2/request/{requestId}/target:
+    get:
+      operationId: TargetsControllerV2_getTarget
+      summary: List all targets for a request
+      description: Call this endpoint to get the target selector and identifier for a request
+      parameters:
+      - name: requestId
+        required: true
+        in: path
+        description: Unique Kodex identifier of the request
+        schema:
+          example: 123e4567-e89b-42d3-a456-426614174000
+          type: string
+      - description: Page number of the results
+        required: false
+        name: page
+        in: query
+        schema:
+          default: 1
+          type: number
+      - description: Number of results returned per page
+        required: false
+        name: pageLength
+        in: query
+        schema:
+          minimum: 5
+          maximum: 100
+          default: 25
+          type: number
+      - description: 'Specifies the field and direction used to order the results
+
+
+          This has the format `sort=field:asc|desc`. Results can only be sorted by `createdAt` to order
+          results by submission time in ascending or descending order.'
+        required: false
+        name: sort
+        in: query
+        schema:
+          default: createdAt:asc
+          type: string
+      responses:
+        '200':
+          description: The target information was successfully retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponseTarget'
+        '400':
+          description: Invalid parameter
+        '403':
+          description: The provided API key was incorrect.
+      tags:
+      - Targets
+      security:
+      - api-key: []
+    post:
+      operationId: TargetsControllerV2_addTarget
+      summary: Add target selector to a request
+      description: Call this endpoint to add a target selector and associated identifiers to a request
+      parameters:
+      - name: requestId
+        required: true
+        in: path
+        description: Unique Kodex identifier of the request
+        schema:
+          example: 123e4567-e89b-42d3-a456-426614174000
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostRequestTargetRequestClass'
+      responses:
+        '201':
+          description: The target was successfully added to the request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Target'
+        '403':
+          description: "The provided API key\n      was incorrect or the request was not found."
+      tags:
+      - Targets
+      security:
+      - api-key: []
+  /v2/request/{requestId}/target/lookup:
+    post:
+      operationId: TargetsControllerV2_bulkTargetLookup
+      summary: Bulk add target lookup response to a request
+      description: 'Call this endpoint to add the results for multiple target lookups related to the same
+        request. This will add and associate target selectors and identifiers.
+
+
+        > 🚧 A maximum of 25 lookups may be submitted in a single request.'
+      parameters:
+      - name: requestId
+        required: true
+        in: path
+        description: Unique Kodex identifier of the request
+        schema:
+          example: 123e4567-e89b-42d3-a456-426614174000
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostBulkTargetLookupRequestClass'
+      responses:
+        '201':
+          description: The target lookup responses were successfully added to the request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Target'
+        '403':
+          description: "The provided API key\n        was incorrect or the request was not found."
+      tags:
+      - Targets
+      security:
+      - api-key: []
+  /v2/request/{requestId}/target/{targetId}/lookup:
+    post:
+      operationId: TargetsControllerV2_addTargetLookup
+      summary: Add target lookup response to a request
+      description: Call this endpoint to add the results of a target lookup. This will add and associate
+        target selectors and identifiers.
+      parameters:
+      - name: requestId
+        required: true
+        in: path
+        description: Unique Kodex identifier of the request
+        schema:
+          example: 123e4567-e89b-42d3-a456-426614174000
+          type: string
+      - name: targetId
+        required: true
+        in: path
+        description: Unique Kodex identifier of the target
+        schema:
+          example: 123e4567-e89b-42d3-a456-426614174000
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostRequestTargetLookupRequestClass'
+      responses:
+        '201':
+          description: The target lookup response was successfully added to the request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Target'
+        '403':
+          description: "The provided API key\n        was incorrect or the request was not found."
+      tags:
+      - Targets
+      security:
+      - api-key: []
+  /v2/request/{requestId}/target/{targetId}/identifier/{identifierId}:
+    patch:
+      operationId: TargetsControllerV2_updateIdentifier
+      summary: Update a target identifier
+      description: Call this endpoint to update the identifier on a target
+      parameters:
+      - name: requestId
+        required: true
+        in: path
+        description: Unique Kodex identifier of the request
+        schema:
+          example: 123e4567-e89b-42d3-a456-426614174000
+          type: string
+      - name: targetId
+        required: true
+        in: path
+        description: Unique Kodex identifier of the target
+        schema:
+          example: 123e4567-e89b-42d3-a456-426614174000
+          type: string
+      - name: identifierId
+        required: true
+        in: path
+        description: Unique Kodex identifier of the identifier
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchIdentifierClass'
+      responses:
+        '200':
+          description: The identifier was successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TargetIdentifier'
+        '403':
+          description: The provided API key was incorrect.
+      tags:
+      - Targets
+      security:
+      - api-key: []
+  /v2/request/{requestId}/attachment:
+    get:
+      operationId: AttachmentControllerV2_getAttachments
+      summary: Fetch attachments
+      description: Retrieves a list of documents associated with a law enforcement request
+      parameters:
+      - name: requestId
+        required: true
+        in: path
+        description: Unique Kodex identifier of the request
+        schema:
+          example: 123e4567-e89b-42d3-a456-426614174000
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: Page number of the results
+        schema:
+          default: 1
+          type: number
+      - name: pageLength
+        required: false
+        in: query
+        description: Number of results returned per page
+        schema:
+          minimum: 5
+          maximum: 100
+          default: 25
+          type: number
+      - name: sort
+        required: false
+        in: query
+        description: 'Specifies the field and direction used to order the results
+
+
+          This has the format `sort=field:asc|desc`. Results can only be sorted by `createdAt` to order
+          results by submission time in ascending or descending order.'
+        schema:
+          default: createdAt:asc
+          type: string
+      - name: isUploaded
+        required: false
+        in: query
+        description: 'Indicates whether the file blob is currently stored in the Kodex system
+
+
+          NOTE: Files may be unavailable due to upload failures or scheduled deletions based on customer-defined
+          retention periods.
+
+
+          If the file does not exist, the download endpoint will return a 404 or 410 error code.'
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: A paginated list of attachments
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponseAttachmentPostResponse'
+        '403':
+          description: "The attachment was not downloaded because the provided API key\n      was incorrect."
+      tags:
+      - Attachments
+      security:
+      - api-key: []
+  /v2/request/{requestId}/attachment/{attachmentId}:
+    get:
+      operationId: AttachmentControllerV2_getAttachment
+      summary: Get metadata about an attachment
+      description: Verifies the SHA of an uploaded attachment for integrity validation.
+      parameters:
+      - name: requestId
+        required: true
+        in: path
+        description: Unique Kodex identifier of the request
+        schema:
+          example: 123e4567-e89b-42d3-a456-426614174000
+          type: string
+      - name: attachmentId
+        required: true
+        in: path
+        description: Unique Kodex identifier of the attachment
+        schema:
+          example: 123e4567-e89b-42d3-a456-426614174000
+          type: string
+      responses:
+        '200':
+          description: The attachment was successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttachmentPostResponse'
+        '403':
+          description: "The attachment metadata was not returned because the provided API key\n      was\
+            \ incorrect."
+      tags:
+      - Attachments
+      security:
+      - api-key: []
+  /v2/request/{requestId}/attachment/{attachmentId}/download:
+    get:
+      operationId: AttachmentControllerV2_downloadAttachment
+      summary: Download a request attachment
+      description: Downloads a specific document associated with a law enforcement request
+      parameters:
+      - name: requestId
+        required: true
+        in: path
+        description: Unique Kodex identifier of the request
+        schema:
+          example: 123e4567-e89b-42d3-a456-426614174000
+          type: string
+      - name: attachmentId
+        required: true
+        in: path
+        description: Unique Kodex identifier of the attachment
+        schema:
+          example: 123e4567-e89b-42d3-a456-426614174000
+          type: string
+      responses:
+        '200':
+          description: The file was downloaded successfully
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: MIME type of the file indicating its format
+            Content-Length:
+              schema:
+                type: number
+              description: Size of the file in bytes
+            Content-Disposition:
+              schema:
+                type: string
+              description: Specifies that the file should be downloaded as an attachment and includes
+                the filename
+        '403':
+          description: "The attachment was not downloaded because the provided API key\n      was incorrect."
+        '404':
+          description: The attachment data does not exist.
+        '410':
+          description: The attachment data has been deleted.
+      tags:
+      - Attachments
+      security:
+      - api-key: []
+  /v2/request/{requestId}/attachment/upload:
+    post:
+      operationId: AttachmentControllerV2_uploadAttachment
+      summary: Upload an attachment
+      description: Uploads a file to a law enforcement request
+      parameters:
+      - name: requestId
+        required: true
+        in: path
+        description: Unique Kodex identifier of the request
+        schema:
+          example: 123e4567-e89b-42d3-a456-426614174000
+          type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PostRequestAttachmentUploadClass'
+      responses:
+        '201':
+          description: The attachment was successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttachmentPostResponse'
+        '403':
+          description: "The request was not updated because the provided API key\n    was incorrect."
+        '413':
+          description: The file was too large (50GB limit)
+      tags:
+      - Attachments
+      security:
+      - api-key: []
+  /v2/request/{requestId}/message:
+    get:
+      operationId: MessagesControllerV2_getExternalMessages
+      summary: List all external messages
+      description: Retrieves a complete list of external messages for a request
+      parameters:
+      - name: requestId
+        required: true
+        in: path
+        description: Unique Kodex identifier of the request
+        schema:
+          example: 123e4567-e89b-42d3-a456-426614174000
+          type: string
+      - description: Page number of the results
+        required: false
+        name: page
+        in: query
+        schema:
+          default: 1
+          type: number
+      - description: Number of results returned per page
+        required: false
+        name: pageLength
+        in: query
+        schema:
+          minimum: 5
+          maximum: 100
+          default: 25
+          type: number
+      - description: 'Specifies the field and direction used to order the results
+
+
+          This has the format `sort=field:asc|desc`. Results can only be sorted by `createdAt` to order
+          results by submission time in ascending or descending order.'
+        required: false
+        name: sort
+        in: query
+        schema:
+          default: createdAt:asc
+          type: string
+      responses:
+        '200':
+          description: The external message information was successfully retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponseExternalMessageResponse'
+        '400':
+          description: Invalid parameter
+        '403':
+          description: The provided API key was incorrect.
+      tags:
+      - Messages
+      security:
+      - api-key: []
+  /v2/request/{requestId}/message/{messageId}:
+    get:
+      operationId: MessagesControllerV2_getExternalMessage
+      summary: Get a single external message
+      description: Retrieves a single external message for a request
+      parameters:
+      - name: requestId
+        required: true
+        in: path
+        description: Unique Kodex identifier of the request
+        schema:
+          example: 123e4567-e89b-42d3-a456-426614174000
+          type: string
+      - name: messageId
+        required: true
+        in: path
+        description: Unique Kodex identifier of the message
+        schema:
+          example: 123e4567-e89b-42d3-a456-426614174000
+          type: string
+      responses:
+        '200':
+          description: The external message information was successfully retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExternalMessageResponse'
+        '400':
+          description: Invalid parameter
+        '403':
+          description: The provided API key was incorrect.
+        '404':
+          description: Message not found
+      tags:
+      - Messages
+      security:
+      - api-key: []
+  /v2/logs/kapi:
+    get:
+      operationId: LogsController_getLogs
+      summary: Retrieve access logs for KAPI
+      description: 'Returns a list of KAPI access logs for your organization.
+
+
+        All API keys in your organization are included. In future updates, results may be limited based
+        on the API key''s scope.
+
+
+        If a cursor is not provided, the endpoint will return the {limit} most recent logs.'
+      parameters:
+      - description: A cursor representing the position from which to start the search. To get the latest
+          provide 'LATEST'
+        required: false
+        name: cursor
+        in: query
+        schema:
+          type: string
+      - description: Maximum number of logs to return (50 - 1000). May return less than the limit if there
+          are no further logs.
+        required: false
+        name: limit
+        in: query
+        schema:
+          minimum: 50
+          maximum: 1000
+          default: 500
+          type: number
+      responses:
+        '200':
+          description: Logs retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetLogsResponse'
+        '400':
+          description: Invalid parameter
+        '403':
+          description: The provided API key was incorrect
+      tags:
+      - Service
+      security:
+      - api-key: []
+  /v2/logs/request:
+    get:
+      operationId: LogsController_getRequestAuditEvents
+      summary: Stream request audit events
+      description: 'Returns a cursor-paginated feed of actions taken on your organization''s requests
+
+        (views, downloads, edits, target changes) for ingestion into a SIEM. Events carry no sensitive
+
+        content — only the action, actor, request, and actor signal such as IP address.
+
+
+        A parent-org key streams events for the parent and all active child orgs; any other key streams
+
+        only its own org. Events lag live activity by up to several minutes. If a cursor is not provided,
+
+        the endpoint returns the {limit} most recent events and only tails forward from there — to ingest
+
+        all existing history, make the first call with cursor ''EARLIEST_AVAILABLE''.'
+      parameters:
+      - description: A cursor marking where to resume. Provide 'LATEST' for the most recent events, or
+          the cursor returned by a previous response.
+        required: false
+        name: cursor
+        in: query
+        schema:
+          type: string
+      - description: Maximum number of events to return (50 - 1000).
+        required: false
+        name: limit
+        in: query
+        schema:
+          minimum: 50
+          maximum: 1000
+          default: 500
+          type: number
+      responses:
+        '200':
+          description: Audit events retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAuditEventsResponse'
+        '400':
+          description: Invalid parameter
+        '403':
+          description: The provided API key was incorrect
+      tags:
+      - Service
+      security:
+      - api-key: []
+  /v2/request/{requestId}/audit:
+    get:
+      operationId: AuditControllerV2_getRequestAuditLog
+      summary: Get the audit log for a request
+      description: 'Returns the audit stream for a request: user actions and target events unified into
+        actor, timestamp, and action, ordered by ascending timestamp.'
+      parameters:
+      - name: requestId
+        required: true
+        in: path
+        description: Unique Kodex identifier of the request
+        schema:
+          example: 123e4567-e89b-42d3-a456-426614174000
+          type: string
+      - description: Page number of the results
+        required: false
+        name: page
+        in: query
+        schema:
+          default: 1
+          type: number
+      - description: Number of entries returned per page
+        required: false
+        name: pageLength
+        in: query
+        schema:
+          minimum: 5
+          maximum: 100
+          default: 25
+          type: number
+      responses:
+        '200':
+          description: The audit log was successfully retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponseAuditEntry'
+        '400':
+          description: Invalid parameter
+        '403':
+          description: The provided API key was incorrect.
+        '404':
+          description: Request not found
+      tags:
+      - Requests
+      security:
+      - api-key: []
+info:
+  title: Kodex API V2
+  description: Secure API for interacting with Kodex requests. This documentation is intended for exploratory
+    understanding of the API.
+  version: 2.0.0
+  contact: {}
+  x-source-url: https://dash.readme.com/api/v1/api-registry/5l4ot1fdms7ss6wc
+  x-documentation-url: https://docs.kodexapi.com/
+  x-last-validated: '2026-08-10'
+  x-provenance: first-party — retrieved from the provider's own documentation host
+tags: []
+servers:
+- url: https://api.demo.kodexglobal.com
+  description: Demo Server
+components:
+  securitySchemes:
+    api-key:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: 'Credential used to authenticate and authorize access to the Kodex Verification API
+
+
+        Learn how to [create an API key](https://docs.kodexapi.com/verifications/reference/generate-and-manage-keys).'
+  schemas:
+    ListConfigResponse:
+      type: object
+      properties:
+        label:
+          type: string
+          description: Identifier for the customization field, used to reference the field in the UI or
+            API
+          example: informationRequested
+        options:
+          description: List of selectable values available for the customization field, if applicable
+          example:
+          - Subscriber Information
+          - Basic Account Details
+          - Message Content
+          type: array
+          items:
+            type: string
+        variant:
+          type: string
+          description: 'Describes the type of customization field, indicating how its value was collected
+            or structured.
+
+
+            Possible values:
+
+            - `SingleOption`: Single value selected from the provided options
+
+            - `MultiOption`: Multiple values selected from the provided options
+
+            - `Text`: Free-form text value
+
+            - `Date`: Date in YYYY-MM-DD format
+
+            - `CountrySelect`: Country name selected from a predefined list'
+          enum:
+          - SingleOption
+          - MultiOption
+          - Text
+          - Date
+          - CountrySelect
+      required:
+      - label
+      - options
+      - variant
+    RequestConfigResponse:
+      type: object
+      properties:
+        legalProcessTypes:
+          description: List of categories that can be used to classify law enforcement requests based
+            on the legal mechanism or procedural stage associated with a request
+          example:
+          - Subpoena
+          - Search Warrant
+          - Emergency
+          type: array
+          items:
+            type: string
+        caseNatureTypes:
+          description: List of categories that can be used to classify law enforcement requests based
+            on the type of criminal activity under investigation
+          example:
+          - Homicide
+          - Stalking
+          - Terrorism
+          type: array
+          items:
+            type: string
+        customizationTypes:
+          description: List of metadata fields that can be used to classify law enforcement requests of
+            the specified type
+          type: array
+          items:
+            $ref: '#/components/schemas/ListConfigResponse'
+      required:
+      - legalProcessTypes
+      - caseNatureTypes
+      - customizationTypes
+    TargetConfigResponse:
+      type: object
+      properties:
+        targetSelectorTypes:
+          description: List of target selector types that can be used to identify targets in requests
+          example:
+          - Full Name
+          - Email Address
+          - Phone Number
+          type: array
+          items:
+            type: string
+        targetIdentifierTypes:
+          description: List of target identifier types that can be used for mapping internal identifiers
+            from the customer's system
+          example:
+          - User ID
+          - Account Number
+          - Device ID
+          type: array
+          items:
+            type: string
+        metadataTypes:
+          description: List of metadata types that can be associated with target identifiers for additional
+            information
+          example:
+          - Active within activity period
+          - Last known location
+          - Account status
+          type: array
+          items:
+            type: string
+      required:
+      - targetSelectorTypes
+      - targetIdentifierTypes
+      - metadataTypes
+    ListRequestResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique Kodex identifier of the request
+          example: 12345678-1234-1234-1234-123456789012
+        createdAt:
+          format: date-time
+          type: string
+          description: Timestamp when the request was submitted, in ISO 8601 format
+        updatedAt:
+          format: date-time
+          type: string
+          description: Timestamp when the request was last modified, in ISO 8601 format
+        number:
+          type: string
+          description: Unique Kodex identifier associated with a request
+          example: KODEX-91
+        status:
+          type: string
+          description: Current phase in the processing workflow
+          example: PROCESSING
+        eevidenceAuthorizationId:
+          type: string
+          description: Identifier of the request's associated eEvidence authorization, or null if the
+            request has none
+          example: 12345678-1234-1234-1234-123456789012
+          nullable: true
+      required:
+      - id
+      - createdAt
+      - updatedAt
+      - number
+      - status
+      - eevidenceAuthorizationId
+    PaginatedResponseListRequestResponse:
+      type: object
+      properties:
+        total:
+          type: number
+          description: Total number of results returned
+          example: 101
+        page:
+          type: number
+          description: Page number of the results
+          example: 1
+        pageLength:
+          type: number
+          description: Number of results returned per page
+          example: 25
+        data:
+          type: array
+          description: List of result objects returned by the query
+          items:
+            $ref: '#/components/schemas/ListRequestResponse'
+      required:
+      - total
+      - page
+      - pageLength
+      - data
+    CustomizationKeyValues:
+      type: object
+      properties:
+        key:
+          type: string
+          description: Name of the customization field
+          example: relatedRequests
+        $value:
+          type: object
+          description: Value associated with the customization key
+          example: KODEX-12
+      required:
+      - key
+      - $value
+    RequestorAgency:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the agency that the requestor belongs to
+        jurisdiction:
+          type: string
+          description: Jurisdiction of the agency that the requestor belongs to
+        country:
+          type: string
+          description: Country of the agency in uppercase [ISO 3166-1 alpha-2](https://www.iso.org/glossary-for-iso-3166.html)
+            format
+        branch:
+          type: string
+          description: Branch of the agency that the requestor belongs to
+        jurisdictionState:
+          type: string
+          description: Jurisdiction state of the agency that the requestor belongs to
+        function:
+          type: string
+          description: 'Function of the agency. '
+          enum:
+          - FINANCIAL_INTELLIGENCE
+          - INTELLIGENCE_AGENCY
+          - JUDICIAL_AND_PROSECUTORS_OFFICE
+          - LAW_ENFORCEMENT_AGENCY
+          - MILITARY_AGENCY
+          - REGULATOR_AND_GOV_CONTROL
+          - TAX_AGENCY
+      required:
+      - name
+    RequestorAddress:
+      type: object
+      properties:
+        addressLines:
+          description: Array of address lines, typically used for detailed address components
+          example:
+          - 123 Main St
+          - Suite 100
+          type: array
+          items:
+            type: string
+        locality:
+          type: string
+          description: City or locality of the address
+          example: Springfield
+        majorAdminArea:
+          type: string
+          description: State, province, or region of the address
+          example: Illinois
+        minorAdminArea:
+          type: string
+          description: Sub-state or sub-region of the address, if applicable
+          example: Sangamon County
+        postalCode:
+          type: string
+          description: Postal code of the address
+          example: '62701'
+        country:
+          type: string
+          description: Country of the address in uppercase [ISO 3166-1 alpha-2](https://www.iso.org/glossary-for-iso-3166.html)
+            format
+    Requestor:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Full name of the agent
+        email:
+          type: string
+          description: Email of the agent
+        phone:
+          type: string
+          description: 'Phone number of the requestor in [E.164](https://www.itu.int/rec/T-REC-E.164/)
+            format
+
+
+            Example (maximum valid length of 15 digits): +880181234567890'
+        phoneExtension:
+          type: string
+          description: Extension of the requestor at the provided `phone`
+        badgeNumber:
+          type: string
+          description: Badge number of the agent
+        title:
+          type: string
+          description: Title of the agent
+        agency:
+          description: Agency that the requestor belongs to
+          allOf:
+          - $ref: '#/components/schemas/RequestorAgency'
+        address:
+          description: Address of the requestor
+          allOf:
+          - $ref: '#/components/schemas/RequestorAddress'
+      required:
+      - name
+      - email
+      - agency
+    Provider:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID of the provider who received the request
+        slug:
+          type: string
+          description: Slug of the provider who received the request
+      required:
+      - id
+      - slug
+    RequestParticipantResponse:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Full name of the agent
+        email:
+          type: string
+          description: Email of the agent
+        phone:
+          type: string
+          description: 'Phone number of the requestor in [E.164](https://www.itu.int/rec/T-REC-E.164/)
+            format
+
+
+            Example (maximum valid length of 15 digits): +880181234567890'
+        phoneExtension:
+          type: string
+          description: Extension of the requestor at the provided `phone`
+        badgeNumber:
+          type: string
+          description: Badge number of the agent
+        title:
+          type: string
+          description: Title of the agent
+        agency:
+          description: Agency that the requestor belongs to
+          allOf:
+          - $ref: '#/components/schemas/RequestorAgency'
+        address:
+          description: Address of the requestor
+          allOf:
+          - $ref: '#/components/schemas/RequestorAddress'
+        role:
+          type: string
+          description: Role of the participant on the request
+          enum:
+          - Primary
+          - Participant
+      required:
+      - name
+      - email
+      - agency
+      - role
+    GetRequestV2Response:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique Kodex identifier of the request
+          example: 12345678-1234-1234-1234-123456789012
+        createdAt:
+          format: date-time
+          type: string
+          description: Timestamp when the request was submitted, in ISO 8601 format
+        updatedAt:
+          format: date-time
+          type: string
+          description: Timestamp when the request was last modified, in ISO 8601 format
+        number:
+          type: string
+          description: Unique Kodex identifier associated with a request
+          example: KODEX-91
+        type:
+          type: string
+          description: Category of request initiated by the requestor (law enforcement agent) concerning
+            a specific target (person of inquiry)
+          example: RECORDS
+        recordsBeginAt:
+          format: date-time
+          type: string
+          description: Start timestamp of the data range for which information is requested about the
+            target, in ISO 8601 format
+        recordsEndAt:
+          format: date-time
+          type: string
+          description: End timestamp of the data range for which information is requested about the target,
+            in ISO 8601 format. Defaults to end of day UTC (`T23:59:59Z`).
+        legalProcessSignedAt:
+          format: date-time
+          type: string
+          description: Timestamp the associated document of the legal process was signed, in ISO 8601
+            format
+        preservationExpiresAt:
+          format: date-time
+          type: string
+          description: Timestamp when the preservation request expires, in ISO 8601 format
+        recordsNdoEndAt:
+          format: date-time
+          type: string
+          description: Expiration timestamp of an active non-disclosure order, in ISO 8601 format
+        hasNdo:
+          type: boolean
+          description: Indicates whether a non-disclosure order (NDO) is in effect, preventing the target
+            of a legal request from being notified that a request for information has been made
+        recordsDueAt:
+          format: date-time
+          type: string
+          description: Timestamp by which the requested information must be delivered to the requestor,
+            in ISO 8601 format
+        $caseNumber:
+          type: string
+          description: Unique agency identifier of the case or file submitted by the requestor (law enforcement
+            agent)
+          example: LEA-123456
+        userNotifiedAt:
+          format: date-time
+          type: string
+          description: 'Timestamp when the target was notified of the information request, in ISO 8601
+            format
+
+
+            Notification is subject to the non-disclosure order timestamp (`recordsNdoEndAt`), if defined.'
+        dsaStatementCategory:
+          type: string
+          description: High-level classification of the request according to the [EU Digital Services
+            Act (DSA)](https://transparency.dsa.ec.europa.eu/page/documentation)
+          example: ConsumerInformation
+        dsaCategoryKeyword:
+          type: string
+          description: Specific subcategory keyword under the [DSA](https://transparency.dsa.ec.europa.eu/page/documentation)
+            statement category
+          example: HiddenAdvertisement
+        tags:
+          description: In-app, customer-defined labels applied to the request, often used for internal
+            categorization
+          example: Important!
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+          description: Current phase in the processing workflow
+          example: PROCESSING
+        caseNature:
+          type: string
+          description: Type or category of criminal activity under investigation
+          example: AssaultHomicide
+        legalProcess:
+          type: string
+          description: Legal mechanism or procedural stage associated with the request
+          example: Subpoena
+        respondedAt:
+          format: date-time
+          type: string
+          description: Timestamp when the request was responded to by an analyst, in ISO 8601 format
+        customizations:
+          description: Customer-specific key/value fields applied to the request, configured for use during
+            intake or for internal-only analyst workflows
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomizationKeyValues'
+        requestor:
+          description: Information about the requestor (law enforcement agent) who submitted the request
+          allOf:
+          - $ref: '#/components/schemas/Requestor'
+        provider:
+          description: Information about the provider who received the request
+          allOf:
+          - $ref: '#/components/schemas/Provider'
+        participants:
+          description: Participants associated with the request
+          type: array
+          items:
+            $ref: '#/components/schemas/RequestParticipantResponse'
+      required:
+      - id
+      - createdAt
+      - updatedAt
+      - number
+      - type
+      - recordsBeginAt
+      - recordsEndAt
+      - legalProcessSignedAt
+      - preservationExpiresAt
+      - recordsNdoEndAt
+      - hasNdo
+      - recordsDueAt
+      - $caseNumber
+      - userNotifiedAt
+      - dsaStatementCategory
+      - dsaCategoryKeyword
+      - tags
+      - status
+      - caseNature
+      - legalProcess
+      - customizations
+      - requestor
+      - provider
+      - participants
+    PatchRequestClass:
+      type: object
+      properties:
+        tags:
+          description: In-app, customer-defined labels applied to the request, often used for internal
+            categorization
+          example: Important!
+          type: array
+          items:
+            type: string
+    TargetGroup:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique Kodex identifier of the target group
+          example: 123e4567-e89b-12d3-a456-426614174000
+        title:
+          type: string
+          description: Human-readable title or name of the target group
+          example: Target 1
+        type:
+          type: string
+          enum:
+          - MISSING_PERSON
+          - SUSPECT
+          - PRIMARY_SUBJECT
+          - ASSOCIATE
+          - VICTIM
+          - WITNESS
+          - OBSERVED_IDENTIFIER
+          - PREFER_NOT_TO_DISCLOSE
+          - OTHER
+          description: 'Type of target group
+
+
+            Possible values:
+
+            - `MISSING_PERSON`: A missing person
+
+            - `SUSPECT`: A suspect in an investigation
+
+            - `PRIMARY_SUBJECT`: The primary subject of the request
+
+            - `ASSOCIATE`: An associate of the primary subject
+
+            - `VICTIM`: A victim
+
+            - `WITNESS`: A witness
+
+            - `OBSERVED_IDENTIFIER`: An observed identifier
+
+            - `PREFER_NOT_TO_DISCLOSE`: Role is known to the requestor but is not being shared
+
+            - `OTHER`: Other type'
+        $notes:
+          type: string
+          description: Additional notes about the target group
+          example: Subject was last seen on January 1, 2025
+      required:
+      - id
+      - title
+      - type
+    IdentifierMetadataKeyValues:
+      type: object
+      properties:
+        key:
+          type: string
+          description: Type of identifier metadata
+          example: Active within activity period
+        $value:
+          type: string
+          description: Identifier metadata returned from the automation associated with the identifier
+          example: 'True'
+      required:
+      - key
+      - $value
+    TargetIdentifier:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique Kodex identifier for the target identifier (internal identifiers from the
+            customer's system)
+          example: 123e4567-e89b-12d3-a456-426614174000
+        $value:
+          type: string
+          description: Customer's internal system identifier that corresponds to the associated selector
+            on the request form
+          example: '12345678'
+        type:
+          type: string
+          description: Category of the identifier
+        status:
+          type: string
+          enum:
+          - ACCEPTED
+          - REJECTED
+          - NEEDS_REVIEW
+          description: 'Indicates whether the identifier yielded data
+
+
+            Possible values:
+
+            -`ACCEPTED`: Data was found. This corresponds to Produce in the UI.
+
+            -`REJECTED`: No data was found. This corresponds to Do not produce in the UI.
+
+            -`NEEDS_REVIEW`: Data availability has not yet been assessed.'
+        metadata:
+          description: Integration partner custom data fields associated with the identifier
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentifierMetadataKeyValues'
+      required:
+      - id
+      - $value
+      - type
+      - status
+      - metadata
+    TargetLookup:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique Kodex identifier of the lookup attempt
+          example: 123e4567-e89b-12d3-a456-426614174000
+        createdAt:
+          format: date-time
+          type: string
+          description: Timestamp when the lookup response was created in the UI or via the API, in ISO
+            8601 format
+        updatedAt:
+          format: date-time
+          type: string
+          description: Timestamp when the lookup was last modified, in ISO 8601 format
+        lookupType:
+          type: string
+          description: 'Manner in which the lookup was executed
+
+
+            Possible values:
+
+            - `Manual`: Entered directly by an analyst
+
+            - `PublicApi`: Triggered via the API'
+          example: PublicApi
+        responseType:
+          type: string
+          enum:
+          - NetworkFailure
+          - CompletedDoesNotExist
+          - CompletedWithData
+          - InvalidData
+          description: 'Result of a lookup attempt for the target selector
+
+
+            Possible values:
+
+            - `NetworkFailure`: The lookup failed due to a network error.
+
+            - `CompletedDoesNotExist`: The lookup completed but no matching data was found.
+
+            - `CompletedWithData`: The lookup completed and data was successfully returned.
+
+            - `InvalidData`: The lookup completed but the data provided was invalid or incomplete.'
+      required:
+      - id
+      - createdAt
+      - updatedAt
+      - lookupType
+      - responseType
+    Target:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique Kodex identifier of the target
+          example: 243e4567-e89b-12d3-a456-426614174000
+        requestId:
+          type: string
+          description: Unique Kodex identifier of the request
+          example: 123e4567-e89b-12d3-a456-426614174000
+        targetGroup:
+          description: Human-readable information about the target group this target belongs to, if any
+          allOf:
+          - $ref: '#/components/schemas/TargetGroup'
+        createdAt:
+          format: date-time
+          type: string
+          description: Timestamp when the target was created, in ISO 8601 format
+        updatedAt:
+          format: date-time
+          type: string
+          description: Timestamp when the target was last modified, in ISO 8601 format
+        $value:
+          type: string
+          description: Value entered by an agent or analyst corresponding to the specified `type`
+          example: Test User
+        type:
+          type: string
+          description: Category of the target
+          example: Full Name
+        status:
+          type: string
+          enum:
+          - ACCEPTED
+          - REJECTED
+          - NEEDS_REVIEW
+          description: 'Status of the target selector based on review of the submitted legal documentation
+
+
+            Possible values:
+
+            - `ACCEPTED`: Selector value matches the submitted legal request. This corresponds to Valid
+            in the UI.
+
+            - `REJECTED`: Selector value does not match the submitted legal request. This corresponds
+            to Invalid in the UI.
+
+            - `NEEDS_REVIEW`: The selector value has not yet been compared to the submitted legal request.'
+        selectorsBeginAt:
+          type: string
+          description: Timestamp when the target selector's relevance period begins, in YYYY-MM-DD HH:MM:SS
+            format
+        selectorsEndAt:
+          type: string
+          description: Timestamp when the target selector's relevance period ends, in YYYY-MM-DD HH:MM:SS
+            format
+        selectorsTimezone:
+          type: string
+          description: Time zone context for the target selector's beginAt and endAt timestamps
+          example: UTC
+        identifiers:
+          description: Mappings between request form selectors and internal identifiers from the customer's
+            system
+          type: array
+          items:
+            $ref: '#/components/schemas/TargetIdentifier'
+        lastLookupResponse:
+          type: string
+          description: Response type from the most recent lookup attempt, representing the latest known
+            outcome for the target
+        lookupResponses:
+          description: Metadata pertaining to each lookup attempt
+          type: array
+          items:
+            $ref: '#/components/schemas/TargetLookup'
+      required:
+      - id
+      - requestId
+      - createdAt
+      - updatedAt
+      - $value
+      - type
+      - status
+      - selectorsBeginAt
+      - selectorsEndAt
+      - selectorsTimezone
+      - identifiers
+      - lookupResponses
+    PaginatedResponseTarget:
+      type: object
+      properties:
+        total:
+          type: number
+          description: Total number of results returned
+          example: 101
+        page:
+          type: number
+          description: Page number of the results
+          example: 1
+        pageLength:
+          type: number
+          description: Number of results returned per page
+          example: 25
+        data:
+          type: array
+          description: List of result objects returned by the query
+          items:
+            $ref: '#/components/schemas/Target'
+      required:
+      - total
+      - page
+      - pageLength
+      - data
+    CreateTargetIdentifier:
+      type: object
+      properties:
+        $value:
+          type: string
+          description: Customer's internal system identifier that corresponds to the associated selector
+            on the request form
+          example: '12345555'
+        type:
+          type: string
+          description: Category of the selector
+          example: User ID
+        status:
+          type: string
+          enum:
+          - ACCEPTED
+          - REJECTED
+          - NEEDS_REVIEW
+          description: 'Indicates whether the identifier yielded data
+
+
+            Possible values:
+
+            - `ACCEPTED`: Data was found. This corresponds to Produce in the UI.
+
+            - `REJECTED`: No data was found. This corresponds to Do not produce in the UI.
+
+            - `NEEDS_REVIEW`: Data availability has not yet been assessed.'
+        metadata:
+          description: Integration partner custom data fields associated with the selector
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentifierMetadataKeyValues'
+      required:
+      - $value
+      - type
+      - status
+    PostRequestTargetRequestClass:
+      type: object
+      properties:
+        $value:
+          type: string
+          description: Value entered by an agent or analyst corresponding to the specified type
+          example: Test User
+        type:
+          type: string
+          description: Category of the target
+          example: Full Name
+        status:
+          type: string
+          enum:
+          - ACCEPTED
+          - REJECTED
+          - NEEDS_REVIEW
+          description: 'Status of the target selector based on review of the submitted legal documentation
+
+
+            Possible values:
+
+            - `ACCEPTED`: Selector value matches the submitted legal request. This corresponds to Valid
+            in the UI.
+
+            - `REJECTED`: Selector value does not match the submitted legal request. This corresponds
+            to Invalid in the UI.
+
+            - `NEEDS_REVIEW`: The selector value has not yet been compared to the submitted legal request.'
+        selectorsBeginAt:
+          type: string
+          description: Timestamp when the target selector's relevance period begins, in ISO 8601 format
+          example: '2024-01-01T00:00:00Z'
+        selectorsEndAt:
+          type: string
+          description: Timestamp when the target selector's relevance period ends, in ISO 8601 format
+          example: '2024-01-01T00:00:00Z'
+        selectorsTimezone:
+          type: string
+          description: Time zone context for the target selector's beginAt and endAt timestamps
+          example: EST
+        identifiers:
+          description: Mappings between request form selectors and internal identifiers from the customer's
+            system
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateTargetIdentifier'
+      required:
+      - $value
+      - type
+      - status
+      - selectorsBeginAt
+      - selectorsEndAt
+      - selectorsTimezone
+      - identifiers
+    BulkTargetLookupClass:
+      type: object
+      properties:
+        lookupResponseType:
+          type: string
+          enum:
+          - NetworkFailure
+          - CompletedDoesNotExist
+          - CompletedWithData
+          - InvalidData
+          description: 'Result of a lookup attempt for the target selector
+
+
+            Possible values:
+
+            - `NetworkFailure`: The lookup failed due to a network error.
+
+            - `CompletedDoesNotExist`: The lookup completed but no matching data was found.
+
+            - `CompletedWithData`: The lookup completed and data was successfully returned.
+
+            - `InvalidData`: The lookup completed but the data provided was invalid or incomplete.'
+        identifiers:
+          description: Mappings between request form selectors and internal identifiers from the customer's
+            system
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateTargetIdentifier'
+        targetId:
+          type: string
+          description: Unique Kodex identifier of the target that was looked up
+          example: 243e4567-e89b-12d3-a456-426614174000
+      required:
+      - lookupResponseType
+      - targetId
+    PostBulkTargetLookupRequestClass:
+      type: object
+      properties:
+        lookups:
+          description: List of target lookups to be added to the request
+          type: array
+          items:
+            $ref: '#/components/schemas/BulkTargetLookupClass'
+      required:
+      - lookups
+    PostRequestTargetLookupRequestClass:
+      type: object
+      properties:
+        lookupResponseType:
+          type: string
+          enum:
+          - NetworkFailure
+          - CompletedDoesNotExist
+          - CompletedWithData
+          - InvalidData
+          description: 'Result of a lookup attempt for the target selector
+
+
+            Possible values:
+
+            - `NetworkFailure`: The lookup failed due to a network error.
+
+            - `CompletedDoesNotExist`: The lookup completed but no matching data was found.
+
+            - `CompletedWithData`: The lookup completed and data was successfully returned.
+
+            - `InvalidData`: The lookup completed but the data provided was invalid or incomplete.'
+        identifiers:
+          description: Mappings between request form selectors and internal identifiers from the customer's
+            system
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateTargetIdentifier'
+      required:
+      - lookupResponseType
+    PatchIdentifierClass:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - ACCEPTED
+          - REJECTED
+          - NEEDS_REVIEW
+    AttachmentPostResponse:
+      type: object
+      properties:
+        isUploaded:
+          type: boolean
+          description: 'Indicates whether the file blob is currently stored in the Kodex system
+
+
+            NOTE: Files may be unavailable due to upload failures or scheduled deletions based on customer-defined
+            retention periods.
+
+
+            If the file does not exist, the download endpoint will return a 404 or 410 error code.'
+        id:
+          type: string
+          description: Unique Kodex identifier (UUID) of the attachment record
+        sha256ContentsHash:
+          type: string
+          description: SHA-256 hash of the file contents, computed by Kodex to verify integrity after
+            upload
+        $fileName:
+          type: string
+          description: Name of the file including extension
+        fileMime:
+          type: string
+          description: MIME type of the file indicating its format
+        fileSize:
+          type: number
+          description: Size of the file in bytes
+        externalUrl:
+          type: string
+          description: Decrypted URL where the file is hosted on the requesting organization's own infrastructure,
+            rather than stored by Kodex. Only present for externally hosted attachments; null otherwise.
+          nullable: true
+      required:
+      - isUploaded
+      - id
+      - sha256ContentsHash
+      - $fileName
+      - fileMime
+      - fileSize
+    PaginatedResponseAttachmentPostResponse:
+      type: object
+      properties:
+        total:
+          type: number
+          description: Total number of results returned
+          example: 101
+        page:
+          type: number
+          description: Page number of the results
+          example: 1
+        pageLength:
+          type: number
+          description: Number of results returned per page
+          example: 25
+        data:
+          type: array
+          description: List of result objects returned by the query
+          items:
+            $ref: '#/components/schemas/AttachmentPostResponse'
+      required:
+      - total
+      - page
+      - pageLength
+      - data
+    PostRequestAttachmentUploadClass:
+      type: object
+      properties:
+        $file:
+          type: string
+          format: binary
+      required:
+      - $file
+    MessageCreatedBy:
+      type: object
+      properties:
+        email:
+          type: string
+          description: Email address of the user who created the message
+        name:
+          type: string
+          description: Name of the user who created the message
+        role:
+          type: string
+          description: 'Role of the user who created the message
+
+            Possible values:
+
+            - `ANALYST`: Internal user who reviews and responds to law enforcement requests
+
+            - `AGENT`: Law enforcement official who submitted the request'
+      required:
+      - name
+      - role
+    ExternalMessageResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique Kodex identifier (UUID) of the message
+          example: 123e4567-e89b-12d3-a456-426614174000
+        createdAt:
+          format: date-time
+          type: string
+          description: Timestamp when the message was created in the UI or via the API, in ISO 8601 format
+        updatedAt:
+          format: date-time
+          type: string
+          description: Timestamp when the message was last modified, in ISO 8601 format
+        $message:
+          type: string
+          description: Message content returned in HTML format
+        actionType:
+          type: string
+          description: Request-related event during which the message was created
+          example: COMMENT
+        isRead:
+          type: boolean
+          description: Indicates whether the recipient has read the message
+        hasAttachments:
+          type: boolean
+          description: Indicates whether the message has any attachments
+        requestAttachmentIds:
+          description: List of unique Kodex identifiers (UUIDs) for attachments associated with the message
+          type: array
+          items:
+            type: string
+        createdBy:
+          description: Information about the user who created the message
+          allOf:
+          - $ref: '#/components/schemas/MessageCreatedBy'
+      required:
+      - id
+      - createdAt
+      - updatedAt
+      - $message
+      - actionType
+      - isRead
+      - hasAttachments
+      - requestAttachmentIds
+      - createdBy
+    PaginatedResponseExternalMessageResponse:
+      type: object
+      properties:
+        total:
+          type: number
+          description: Total number of results returned
+          example: 101
+        page:
+          type: number
+          description: Page number of the results
+          example: 1
+        pageLength:
+          type: number
+          description: Number of results returned per page
+          example: 25
+        data:
+          type: array
+          description: List of result objects returned by the query
+          items:
+            $ref: '#/components/schemas/ExternalMessageResponse'
+      required:
+      - total
+      - page
+      - pageLength
+      - data
+    LogEntry:
+      type: object
+      properties:
+        timestamp:
+          format: date-time
+          type: string
+          description: Timestamp when the log entry was created
+          example: '2024-06-01T12:34:56.789Z'
+        path:
+          type: string
+          description: API path that was accessed
+          example: /v1/resource
+        responseCode:
+          type: number
+          description: HTTP response code returned
+          example: 200
+        apiKeyFragment:
+          type: string
+          description: Reference of the API key used for the request
+          example: ksk_zcxTosZJSLWwsuIxtQQG2Q
+        userAgent:
+          type: string
+          description: User agent string from the request
+          example: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)
+        ipAddress:
+          type: string
+          description: IP address of the requester
+          example: 192.168.1.1
+        responseSize:
+          type: string
+          description: Size of the response in bytes
+          example: 512
+      required:
+      - timestamp
+      - path
+      - responseCode
+      - apiKeyFragment
+      - userAgent
+      - ipAddress
+    GetLogsResponse:
+      type: object
+      properties:
+        logs:
+          description: Array of log entries returned by the query (maximum 1000 entries per response)
+          type: array
+          items:
+            $ref: '#/components/schemas/LogEntry'
+        hasMore:
+          type: boolean
+          description: Whether there are more results to fetch
+        cursor:
+          type: string
+          description: A cursor representing the position from which to start the search
+      required:
+      - logs
+      - hasMore
+    AuditEvent:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Stable, monotonically increasing event id. A 64-bit integer serialized as a decimal
+            string (it can exceed the safe JavaScript number range) — treat it as an opaque token.
+          example: '10423'
+        source:
+          type: string
+          description: Which system table the event came from
+          example: REQUEST_ACTION
+        eventType:
+          type: string
+          description: The action that occurred
+          example: ATTACHMENT_DOWNLOAD
+        timestamp:
+          format: date-time
+          type: string
+          description: When the action occurred
+          example: '2026-07-16T12:34:56.789Z'
+        requestId:
+          type: string
+          description: Request the action was taken on
+        requestNumber:
+          type: string
+          description: The request's human-readable number, or null if it has none yet
+          example: REQ-1042
+        actorUserId:
+          type: string
+          description: User who performed the action
+        actorEmail:
+          type: string
+          description: Email of the acting user
+        actorOrgId:
+          type: string
+          description: Acting user's organization
+        targetId:
+          type: string
+          description: Target the action affected, if any
+        ipAddress:
+          type: string
+          description: IP address of the actor. Included only for your own organization's users; null
+            for external actors (e.g. a requesting agent), whose network signals are not exposed.
+          example: 192.168.1.1
+        fingerprintId:
+          type: string
+          description: Browser fingerprint of the actor. Included only for your own organization's users;
+            null for external actors (e.g. a requesting agent).
+        isSystemGenerated:
+          type: boolean
+          description: Whether the action was performed by the system
+        metadata:
+          type: object
+          description: 'Non-sensitive, source-dependent event metadata, or null. For field-change events:
+            `{ changedFields: string[] }`. For request actions: `{ isKapiGenerated, agentHasMfaEnabled
+            }`.'
+          nullable: true
+      required:
+      - id
+      - source
+      - eventType
+      - timestamp
+      - requestId
+      - isSystemGenerated
+    GetAuditEventsResponse:
+      type: object
+      properties:
+        events:
+          description: 'Audit events in ingestion order (ascending event id), which is the gapless order
+            to page through. Note this is not necessarily `timestamp` order: an event that was ingested
+            late gets a later id, so `timestamp` is not guaranteed monotonic within the feed.'
+          type: array
+          items:
+            $ref: '#/components/schemas/AuditEvent'
+        hasMore:
+          type: boolean
+          description: Whether there are more results to fetch
+        cursor:
+          type: string
+          description: Cursor marking the last event returned
+      required:
+      - events
+      - hasMore
+    AuditActor:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Kodex identifier of the user who performed the action
+        name:
+          type: string
+          description: Full name of the user who performed the action
+        email:
+          type: string
+          description: Email of the user who performed the action
+      required:
+      - id
+      - name
+    AuditEntry:
+      type: object
+      properties:
+        timestamp:
+          format: date-time
+          type: string
+          description: When the action occurred
+          example: '2026-06-01T12:34:56.789Z'
+        action:
+          type: string
+          description: The action that was recorded
+          example: REQUEST_VIEWED
+        isSystemGenerated:
+          type: boolean
+          description: Whether the action was generated by the system rather than a user
+        actor:
+          description: The user who performed the action. Absent for system-generated actions.
+          allOf:
+          - $ref: '#/components/schemas/AuditActor'
+      required:
+      - timestamp
+      - action
+      - isSystemGenerated
+    PaginatedResponseAuditEntry:
+      type: object
+      properties:
+        total:
+          type: number
+          description: Total number of results returned
+          example: 101
+        page:
+          type: number
+          description: Page number of the results
+          example: 1
+        pageLength:
+          type: number
+          description: Number of results returned per page
+          example: 25
+        data:
+          type: array
+          description: List of result objects returned by the query
+          items:
+            $ref: '#/components/schemas/AuditEntry'
+      required:
+      - total
+      - page
+      - pageLength
+      - data

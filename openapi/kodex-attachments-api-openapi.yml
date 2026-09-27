@@ -1,0 +1,281 @@
+openapi: 3.2.0
+info:
+  title: Kodex API V2 Attachments API
+  description: Secure API for interacting with Kodex requests. This documentation is intended for exploratory understanding of the API.
+  version: 2.0.0
+  contact: {}
+  x-source-url: https://dash.readme.com/api/v1/api-registry/5l4ot1fdms7ss6wc
+  x-documentation-url: https://docs.kodexapi.com/
+  x-last-validated: '2026-08-10'
+  x-provenance: first-party — retrieved from the provider's own documentation host
+servers:
+- url: https://api.demo.kodexglobal.com
+  description: Demo Server
+tags:
+- name: Attachments
+paths:
+  /v2/request/{requestId}/attachment:
+    get:
+      operationId: AttachmentControllerV2_getAttachments
+      summary: Fetch attachments
+      description: Retrieves a list of documents associated with a law enforcement request
+      parameters:
+      - name: requestId
+        required: true
+        in: path
+        description: Unique Kodex identifier of the request
+        schema:
+          example: 123e4567-e89b-42d3-a456-426614174000
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: Page number of the results
+        schema:
+          default: 1
+          type: number
+      - name: pageLength
+        required: false
+        in: query
+        description: Number of results returned per page
+        schema:
+          minimum: 5
+          maximum: 100
+          default: 25
+          type: number
+      - name: sort
+        required: false
+        in: query
+        description: 'Specifies the field and direction used to order the results
+
+
+          This has the format `sort=field:asc|desc`. Results can only be sorted by `createdAt` to order results by submission time in ascending or descending order.'
+        schema:
+          default: createdAt:asc
+          type: string
+      - name: isUploaded
+        required: false
+        in: query
+        description: 'Indicates whether the file blob is currently stored in the Kodex system
+
+
+          NOTE: Files may be unavailable due to upload failures or scheduled deletions based on customer-defined retention periods.
+
+
+          If the file does not exist, the download endpoint will return a 404 or 410 error code.'
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: A paginated list of attachments
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponseAttachmentPostResponse'
+        '403':
+          description: "The attachment was not downloaded because the provided API key\n      was incorrect."
+      tags:
+      - Attachments
+      security:
+      - api-key: []
+  /v2/request/{requestId}/attachment/{attachmentId}:
+    get:
+      operationId: AttachmentControllerV2_getAttachment
+      summary: Get metadata about an attachment
+      description: Verifies the SHA of an uploaded attachment for integrity validation.
+      parameters:
+      - name: requestId
+        required: true
+        in: path
+        description: Unique Kodex identifier of the request
+        schema:
+          example: 123e4567-e89b-42d3-a456-426614174000
+          type: string
+      - name: attachmentId
+        required: true
+        in: path
+        description: Unique Kodex identifier of the attachment
+        schema:
+          example: 123e4567-e89b-42d3-a456-426614174000
+          type: string
+      responses:
+        '200':
+          description: The attachment was successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttachmentPostResponse'
+        '403':
+          description: "The attachment metadata was not returned because the provided API key\n      was incorrect."
+      tags:
+      - Attachments
+      security:
+      - api-key: []
+  /v2/request/{requestId}/attachment/{attachmentId}/download:
+    get:
+      operationId: AttachmentControllerV2_downloadAttachment
+      summary: Download a request attachment
+      description: Downloads a specific document associated with a law enforcement request
+      parameters:
+      - name: requestId
+        required: true
+        in: path
+        description: Unique Kodex identifier of the request
+        schema:
+          example: 123e4567-e89b-42d3-a456-426614174000
+          type: string
+      - name: attachmentId
+        required: true
+        in: path
+        description: Unique Kodex identifier of the attachment
+        schema:
+          example: 123e4567-e89b-42d3-a456-426614174000
+          type: string
+      responses:
+        '200':
+          description: The file was downloaded successfully
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: MIME type of the file indicating its format
+            Content-Length:
+              schema:
+                type: number
+              description: Size of the file in bytes
+            Content-Disposition:
+              schema:
+                type: string
+              description: Specifies that the file should be downloaded as an attachment and includes the filename
+        '403':
+          description: "The attachment was not downloaded because the provided API key\n      was incorrect."
+        '404':
+          description: The attachment data does not exist.
+        '410':
+          description: The attachment data has been deleted.
+      tags:
+      - Attachments
+      security:
+      - api-key: []
+  /v2/request/{requestId}/attachment/upload:
+    post:
+      operationId: AttachmentControllerV2_uploadAttachment
+      summary: Upload an attachment
+      description: Uploads a file to a law enforcement request
+      parameters:
+      - name: requestId
+        required: true
+        in: path
+        description: Unique Kodex identifier of the request
+        schema:
+          example: 123e4567-e89b-42d3-a456-426614174000
+          type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PostRequestAttachmentUploadClass'
+      responses:
+        '201':
+          description: The attachment was successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttachmentPostResponse'
+        '403':
+          description: "The request was not updated because the provided API key\n    was incorrect."
+        '413':
+          description: The file was too large (50GB limit)
+      tags:
+      - Attachments
+      security:
+      - api-key: []
+components:
+  schemas:
+    AttachmentPostResponse:
+      type: object
+      properties:
+        isUploaded:
+          type: boolean
+          description: 'Indicates whether the file blob is currently stored in the Kodex system
+
+
+            NOTE: Files may be unavailable due to upload failures or scheduled deletions based on customer-defined retention periods.
+
+
+            If the file does not exist, the download endpoint will return a 404 or 410 error code.'
+        id:
+          type: string
+          description: Unique Kodex identifier (UUID) of the attachment record
+        sha256ContentsHash:
+          type: string
+          description: SHA-256 hash of the file contents, computed by Kodex to verify integrity after upload
+        $fileName:
+          type: string
+          description: Name of the file including extension
+        fileMime:
+          type: string
+          description: MIME type of the file indicating its format
+        fileSize:
+          type: number
+          description: Size of the file in bytes
+        externalUrl:
+          type:
+          - string
+          - 'null'
+          description: Decrypted URL where the file is hosted on the requesting organization's own infrastructure, rather than stored by Kodex. Only present for externally hosted attachments; null otherwise.
+      required:
+      - isUploaded
+      - id
+      - sha256ContentsHash
+      - $fileName
+      - fileMime
+      - fileSize
+    PaginatedResponseAttachmentPostResponse:
+      type: object
+      properties:
+        total:
+          type: number
+          description: Total number of results returned
+          example: 101
+        page:
+          type: number
+          description: Page number of the results
+          example: 1
+        pageLength:
+          type: number
+          description: Number of results returned per page
+          example: 25
+        data:
+          type: array
+          description: List of result objects returned by the query
+          items:
+            $ref: '#/components/schemas/AttachmentPostResponse'
+      required:
+      - total
+      - page
+      - pageLength
+      - data
+    PostRequestAttachmentUploadClass:
+      type: object
+      properties:
+        $file:
+          type: string
+          format: binary
+      required:
+      - $file
+  securitySchemes:
+    api-key:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: 'Credential used to authenticate and authorize access to the Kodex Verification API
+
+
+        Learn how to [create an API key](https://docs.kodexapi.com/verifications/reference/generate-and-manage-keys).'
