@@ -64,6 +64,111 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Kodex is a company surfaced as a portfolio company of a16z and added to the API Evangelist network as a stub for enrichment. This profile is a lead awaiting the enrichment pipeline.
+Kodex (Albatross Technologies) operates the Kodex Global Network, a platform for managing law enforcement and government data requests — subpoenas, warrants, and emergency disclosure requests — for crypto exchanges, fintechs, banks, and telecommunications companies. The platform covers request intake and automation, requester verification against a network of 15K+ government agencies, threat intelligence, encrypted data production and delivery, cost recovery, and transparency reporting. Kodex exposes the same network programmatically through the Kodex API: a Verification API for real-time requester lookups, a Targets (Data Production) API for automating production on verified requests, and status webhooks for agent credential changes. Developer documentation is published on ReadMe at docs.kodexapi.com as two projects — Request Portal and Verifications API — both authenticated with scoped organization API keys sent in an X-API-Key header.
 
-Backed by: a16z
+**Areas:** Company · Law Enforcement · Compliance · Legal · Identity Verification · Government · Security · Threat Intelligence · Data Requests · Trust and Safety
+
+## Kodex on APIs.io
+
+Everything profiled for Kodex is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/kodex/](https://apis.io/providers/kodex/)** — or go straight to one of the APIs or properties below.
+
+### APIs (2)
+
+- [Kodex Verification API](https://apis.io/apis/kodex/verification-api/) — Real-time verification of law enforcement requesters. Pass a requester email address to the lookup endpoint and receive the agent's standing, their agency's…
+- [Kodex Request Portal API](https://apis.io/apis/kodex/request-portal-api/) — The Request Portal (Targets / Data Production) API creates and manages data requests and automates producing data on verified requests — targets,…
+
+### Published properties
+
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
+
+#### AsyncAPI (1)
+
+Event-driven and webhook contracts.
+
+- [Kodex Webhooks](https://apis.io/asyncapis/kodex/kodex-webhooks/)
+
+#### MCP servers (1)
+
+Model Context Protocol servers that expose the API to agents.
+
+- [kodex](https://apis.io/servers/kodex/kodex/)
+
+#### Security (3)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Kodex Authentication](https://apis.io/security/kodex/kodex-authentication/)
+- [Kodex Domain Security](https://apis.io/security/kodex/kodex-domain-security/)
+- [Kodex Vulnerability Disclosure](https://apis.io/security/kodex/kodex-vulnerability-disclosure/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
+- [Website](https://www.kodexglobal.com/)
+- [Documentation](https://docs.kodexapi.com/)
+- [API reference](https://docs.kodexapi.com/request-portal/reference/request-api)
+- [Sign up](https://www.kodexglobal.com/contact)
+- [Support](https://www.kodexglobal.com/contact)
+- [Blog](https://www.kodexglobal.com/blog)
+- [Security](https://www.kodexglobal.com/.well-known/security.txt)
+- [Compliance](https://www.kodexglobal.com/security-compliance)
+- [Terms of service](https://www.kodexglobal.com/terms-of-use)
+- [Privacy policy](https://www.kodexglobal.com/privacy-policy)
+- [GitHub](https://github.com/albatross-technologies)
+- [Status](https://status.kodexglobal.com/)
+
+## API Evangelist rating
+
+**Kin Score 45.0** — developing · rubric 0.25.0 · scored 2026-10-23
+
+| Facet | Score |
+|---|---|
+| Discoverability | 73.2 |
+| Contract quality | 39.0 |
+| Contract governance | 18.2 |
+| Operational transparency | 47.4 |
+| Developer ergonomics | 39.3 |
+| Access clarity | 42.1 |
+
+**Agent readiness 19.8** — agent-aware
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | — |
+| Reversibility Documented | — |
+| MCP Server | — |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | — |
+| Error Semantics | — |
+| OpenAPI Examples | — |
+| Rate Limit Signal | — |
+| Event Surface Described | yes |
+| Agent Skills | — |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+| Pagination Ratio | na |
+| Operation Distinctiveness | na |
+
+**Regulatory alignment 35.3** — Government & Public Sector
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/kodex/](https://apis.io/providers/kodex/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Kodex: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/kodex/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
